@@ -3,24 +3,25 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Send, Mail, ArrowRight, ShieldCheck, Globe2, Zap } from "lucide-react";
+import Image from "next/image";
 
 const Github = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
   </svg>
 );
 
 const Twitter = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
   </svg>
 );
 
 const Linkedin = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-    <rect x="2" y="9" width="4" height="12"/>
-    <circle cx="4" cy="4" r="2"/>
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect x="2" y="9" width="4" height="12" />
+    <circle cx="4" cy="4" r="2" />
   </svg>
 );
 // import logoAsset from "@/Public/chainpay-logo.png.asset.json";
@@ -31,29 +32,18 @@ const columns = [
     title: "Company",
     links: [
       { to: "/about", label: "About" },
-      { to: "/industries", label: "Industries" },
-      { to: "/cryptocurrencies", label: "Cryptocurrencies" },
-      { to: "/pricing", label: "Pricing" },
+      { to: "/contact", label: "Contact" },
     ],
   },
   {
-    title: "Developers",
+    title: "Suppoprt",
     links: [
       { to: "/integration-docs", label: "Integration Docs" },
       { to: "/api-reference", label: "API Reference" },
-      { to: "/developers", label: "Developer Hub" },
-      { to: "/resources", label: "Resources" },
     ],
   },
-  {
-    title: "Products",
-    links: [
-      { to: "/products", label: "Payment Gateway" },
-      { to: "/solutions", label: "Solutions" },
-      { to: "/products", label: "Merchant Tools" },
-      { to: "/products", label: "Sandbox" },
-    ],
-  },
+
+
 ] as const;
 
 const trustBadges = [
@@ -80,7 +70,7 @@ export function Footer() {
       </div>
 
       {/* Newsletter banner */}
-      <div className="mx-auto max-w-7xl px-6 pt-16">
+      <div className="mx-auto max-w-7xl px-6 pt-16 border-border/50">
         <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/10 via-fuchsia-500/10 to-cyan-400/10 p-8 md:p-10">
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/30 blur-3xl" />
           <div className="relative grid items-center gap-6 md:grid-cols-[1.4fr_1fr]">
@@ -114,14 +104,16 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="absolute -inset-1.5 rounded-xl bg-gradient-to-br from-primary to-fuchsia-500 opacity-60 blur-md" />
-                {/* <img src={logoAsset.url} alt="ChainPay logo" className="relative h-11 w-11 rounded-lg bg-background p-1 ring-1 ring-border/60" /> */}
+                {/* <div className="absolute -inset-1.5 rounded-xl bg-gradient-to-br from-primary to-fuchsia-500 opacity-60 blur-md" /> */}
+                <Image
+                  src="/Chainpay_logo-blue.png"
+                  alt="ChainPay"
+                  width={180}
+                  height={50}
+                />
               </div>
               <div className="leading-tight">
-                <div className="text-2xl font-extrabold">
-                  <span className="bg-gradient-to-r from-foreground via-primary to-fuchsia-500 bg-clip-text text-transparent">Chain</span>
-                  <span className="text-primary">Pay</span>
-                </div>
+
                 <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                   Fast, Secure, And Borderless
                 </div>
@@ -132,10 +124,10 @@ export function Footer() {
               The crypto payment gateway built for modern businesses. Accept Bitcoin, Ethereum, USDT and 50+ assets — settle to your wallet or bank in seconds.
             </p>
 
-            
+
 
             {/* Trust badges */}
-            <div className="mt-6 flex flex-wrap gap-2">
+            {/* <div className="mt-6 flex flex-wrap gap-2">
               {trustBadges.map((b) => (
                 <span
                   key={b.label}
@@ -145,7 +137,7 @@ export function Footer() {
                   {b.label}
                 </span>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {columns.map((col) => (
@@ -172,7 +164,7 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             © ChainPay {new Date().getFullYear()}. All Rights reserved. Built for the future of payments.
           </p>
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             {[
               { Icon: Twitter, label: "Twitter" },
               { Icon: Github, label: "GitHub" },
@@ -188,12 +180,12 @@ export function Footer() {
                 <Icon className="h-4 w-4" />
               </a>
             ))}
-          </div>
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          </div> */}
+          {/* <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <a href="#" className="hover:text-foreground">Privacy</a>
             <a href="#" className="hover:text-foreground">Terms</a>
             <a href="#" className="hover:text-foreground">Cookies</a>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

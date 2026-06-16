@@ -5,16 +5,18 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Menu, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import chainpayLogo from "@/Public/Chainpay_logo(Blue).png";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const links = [
     { to: "/industries", label: "Industries" },
     { to: "/cryptocurrencies", label: "Cryptocurrencies" },
     { to: "/about", label: "About" },
-    { to: "/solutions", label: "Solutions" },
-    { to: "/resources", label: "Resources" },
-    { to: "/pricing", label: "Pricing" },
+    { to: "/integration-docs", label: "Integration Doc" },
+    { to: "/api-reference", label: "Api Reference" },
+
+
+
 ] as const;
 
 export function Navbar() {
@@ -29,10 +31,12 @@ export function Navbar() {
             <div className="border-b border-border/40 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
                 <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
                     <Link href="/" className="group flex items-center gap-2.5">
-                        <img
-                            src={chainpayLogo.src}
-                            alt="ChainPay logo"
-                            className="relative h-10 w-auto transition-transform group-hover:rotate-6"
+                        <Image
+                            src="/Chainpay_logo-blue.png"
+                            alt="ChainPay"
+                            width={180}
+                            height={50}
+                            priority
                         />
                     </Link>
 

@@ -22,7 +22,7 @@ export function WhyChainPay() {
   return (
     <section className="mx-auto max-w-7xl px-6 pb-24">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+        <h2 className="text-3xl font-bold tracking-tight md:text-4xl mt-10 md:mt-20">
           Why ChainPay is the Ultimate{" "}
           <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
             Crypto Payment Solution

@@ -1,5 +1,5 @@
-import ProductsPage from "@/InnerPages/products";
+import ProductsPage from "@/InnerPages/products/products";
 
-export default function Page() {
+export default function page() {
   return <ProductsPage />;
 }

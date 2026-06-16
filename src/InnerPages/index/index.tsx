@@ -9,15 +9,15 @@ import { AdvancedFeatures } from "@/components/hero/Advancefeatures/AdvancedFeat
 import { Testimonials } from "@/components/hero/testimonial/Testimonials";
 import { CTA } from "@/components/hero/CTA/CTA";
 
-({
-    head: () => ({
-        meta: [
-            { title: "ChainPay — Fast, Affordable & Developer-First Crypto Payment Gateway" },
-            { name: "description", content: "ChainPay is a next-generation crypto payment gateway built for simplicity, speed, and support. Ultra-low fees and seamless integration." },
-        ],
-    }),
-    component: Index,
-});
+// ({
+//     head: () => ({
+//         meta: [
+//             { title: "ChainPay — Fast, Affordable & Developer-First Crypto Payment Gateway" },
+//             { name: "description", content: "ChainPay is a next-generation crypto payment gateway built for simplicity, speed, and support. Ultra-low fees and seamless integration." },
+//         ],
+//     }),
+//     component: Index,
+// });
 
 export default function Index() {
     return (
