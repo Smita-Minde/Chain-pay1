@@ -17,6 +17,7 @@ const links = [
 
 
 
+
 ] as const;
 
 export function Navbar() {
@@ -66,14 +67,17 @@ export function Navbar() {
                         <Button
                             variant="ghost"
                             className="hidden sm:inline-flex text-sm font-semibold hover:bg-primary/5 hover:text-primary"
+                            asChild
                         >
-                            Log in
+                            <Link href="/login">Log in</Link>
                         </Button>
                         <div className="relative hidden sm:block">
                             <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-primary via-fuchsia-500 to-primary opacity-70 blur-sm animate-gradient bg-[length:200%_auto]" />
-                            <Button className="relative bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30">
-                                Get Started
-                                <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                            <Button className="relative bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30" asChild>
+                                <Link href="/signup">
+                                    Get Started
+                                    <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                                </Link>
                             </Button>
                         </div>
                         <button
@@ -109,8 +113,12 @@ export function Navbar() {
                                 );
                             })}
                             <li className="mt-2 flex gap-2">
-                                <Button variant="outline" className="flex-1">Log in</Button>
-                                <Button className="flex-1 bg-primary">Get Started</Button>
+                                <Button variant="outline" className="flex-1" asChild>
+                                    <Link href="/login" onClick={() => setOpen(false)}>Log in</Link>
+                                </Button>
+                                <Button className="flex-1 bg-primary" asChild>
+                                    <Link href="/signup" onClick={() => setOpen(false)}>Get Started</Link>
+                                </Button>
                             </li>
                         </ul>
                     </div>
