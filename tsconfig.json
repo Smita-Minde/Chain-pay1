@@ -19,7 +19,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@hooks": ["./app/hooks/useAuth.tsx"],
+      "@components/Modals/*": ["./app/Modals/*"],
+      "@components": ["./src/components/index.ts"]
     }
   },
   "include": [
@@ -29,6 +33,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "src/InnerPages/root/root.tsx"  ],
+  , "src/InnerPages/root/root.tsx"  ],
   "exclude": ["node_modules"]
 }

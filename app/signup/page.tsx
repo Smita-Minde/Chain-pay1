@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useAuth } from "@hooks";
+import OtpInputModal from "@components/Modals/OtpInputModal";
 
 export default function SignupPage() {
     const [email, setEmail] = useState("");
@@ -20,6 +22,14 @@ export default function SignupPage() {
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [submitAttempted, setSubmitAttempted] = useState(false);
 
+    // OTP states
+    const [openOtpVerification, setOpenOtpVerification] = useState(false);
+    const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
+    const [otpTimerData, setOtpTimerData] = useState<any>({});
+    const [timeLeft, setTimeLeft] = useState<number>(0);
+    const [canResend, setCanResend] = useState<boolean>(false);
+
+    const { register, authOtp } = useAuth();
     const router = useRouter();
 
     const handleEmailChange = (val: string) => {
@@ -27,8 +37,8 @@ export default function SignupPage() {
         if (submitAttempted) {
             if (!val.trim()) {
                 setEmailError("Email is required");
-            } else if (!val.toLowerCase().endsWith("@gmail.com") && !val.toLowerCase().endsWith("@gamil.com")) {
-                setEmailError("Email must end with @gmail.com");
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                setEmailError("Invalid email format");
             } else {
                 setEmailError("");
             }
@@ -40,8 +50,8 @@ export default function SignupPage() {
         if (submitAttempted) {
             if (!val) {
                 setPasswordError("Password is required");
-            } else if (val.length < 8 || val.length > 12) {
-                setPasswordError("Password must be between 8 and 12 characters");
+            } else if (val.length < 8) {
+                setPasswordError("Password must be at least 8 characters");
             } else {
                 setPasswordError("");
             }
@@ -67,7 +77,7 @@ export default function SignupPage() {
         }
     };
 
-    const handleCreateAccount = (e: React.FormEvent) => {
+    const handleRequestforOtp = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitAttempted(true);
 
@@ -76,8 +86,8 @@ export default function SignupPage() {
         if (!email.trim()) {
             setEmailError("Email is required");
             hasError = true;
-        } else if (!email.toLowerCase().endsWith("@gmail.com") && !email.toLowerCase().endsWith("@gamil.com")) {
-            setEmailError("Email must end with @gmail.com");
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setEmailError("Invalid email format");
             hasError = true;
         } else {
             setEmailError("");
@@ -86,8 +96,8 @@ export default function SignupPage() {
         if (!password) {
             setPasswordError("Password is required");
             hasError = true;
-        } else if (password.length < 8 || password.length > 12) {
-            setPasswordError("Password must be between 8 and 12 characters");
+        } else if (password.length < 8) {
+            setPasswordError("Password must be at least 8 characters");
             hasError = true;
         } else {
             setPasswordError("");
@@ -105,14 +115,81 @@ export default function SignupPage() {
 
         if (hasError) return;
 
-        // Save registered user info to localStorage
-        localStorage.setItem("registered_user", JSON.stringify({ email, password }));
-
-        toast.success("Account created successfully!", {
-            description: "Welcome to ChainPay. Please log in.",
-        });
-        router.push("/login");
+        try {
+            toast.loading("Sending code...", { id: "register-otp" });
+            const payload = {
+                email,
+                type: 'register',
+            };
+            const response = await authOtp(payload);
+            toast.dismiss("register-otp");
+            if (response) {
+                let timerData = response;
+                if (response.email && typeof response.email === 'object') {
+                    timerData = {
+                        ...response.email,
+                        email: email
+                    };
+                } else if (response.email) {
+                    timerData = { email: response.email, ...response };
+                }
+                setOtpTimerData(timerData);
+                setOpenOtpVerification(true);
+                toast.success("Verification code sent to your email!");
+            }
+        } catch (error) {
+            toast.dismiss("register-otp");
+            console.error("Error in registration OTP request:", error);
+            toast.error("Failed to request verification code.");
+        }
     };
+
+    const handleRegisterSubmit = async () => {
+        try {
+            toast.loading("Creating account...", { id: "register-action" });
+            const payload = {
+                email,
+                password,
+                confirmPassword,
+                emailVerificationCode: otp.join(''),
+            };
+            const [response, error] = await register(payload, '/login/home');
+            toast.dismiss("register-action");
+            if (error) {
+                toast.error(typeof error === 'string' ? error : (error.message || "Failed to create account"));
+            } else if (response) {
+                toast.success("Account created successfully!");
+                router.push("/login/home");
+            }
+        } catch (error) {
+            toast.dismiss("register-action");
+            console.error("Error during register:", error);
+            toast.error("An error occurred during registration.");
+        }
+    };
+
+    // OTP Countdown Timer
+    useEffect(() => {
+        if (otpTimerData && Object.keys(otpTimerData).length > 0) {
+            const timerInterval = setInterval(() => {
+                if (otpTimerData && otpTimerData.sentAt && otpTimerData.timeout) {
+                    const currentTime = new Date().getTime();
+                    const sentTime = new Date(otpTimerData.sentAt).getTime();
+                    const elapsedTime = currentTime - sentTime;
+                    const remainingTime = otpTimerData.timeout - elapsedTime;
+
+                    if (remainingTime <= 0) {
+                        setCanResend(true);
+                        setTimeLeft(0);
+                    } else {
+                        setCanResend(false);
+                        setTimeLeft(remainingTime);
+                    }
+                }
+            }, 1000);
+            return () => clearInterval(timerInterval);
+        }
+    }, [otpTimerData]);
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#f8fbff] via-[#eef4ff] to-[#dbeafe] flex items-center justify-center py-12 px-4">
@@ -141,7 +218,7 @@ export default function SignupPage() {
                             </p>
                         </div>
 
-                        <form onSubmit={handleCreateAccount} className="space-y-4">
+                        <form onSubmit={handleRequestforOtp} className="space-y-4">
                             {/* Email */}
                             <div>
                                 <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -255,8 +332,8 @@ export default function SignupPage() {
                             </div>
 
                             {/* Terms */}
-                            <label className="flex items-start gap-3 text-sm text-slate-600 select-none pt-2">
-                                <input type="checkbox" className="mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500" required />
+                            <label className="flex items-start gap-3 text-sm text-slate-600 select-none pt-2 cursor-pointer">
+                                <input type="checkbox" className="mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" required />
                                 <span className="leading-tight">I agree to the Terms & Conditions and Privacy Policy.</span>
                             </label>
 
@@ -287,6 +364,20 @@ export default function SignupPage() {
                     </div>
                 </motion.div>
             </div>
+
+            {openOtpVerification && (
+                <OtpInputModal
+                    setOpenOtpVerification={setOpenOtpVerification}
+                    otp={otp}
+                    setOtp={setOtp}
+                    email={email}
+                    timeLeft={timeLeft}
+                    canResend={canResend}
+                    handleRequestforOtp={handleRequestforOtp}
+                    formSubmit={handleRegisterSubmit}
+                    setTimeLeft={setTimeLeft}
+                />
+            )}
         </div>
     );
 }
