@@ -1,0 +1,20 @@
+﻿diff --git a/src/components/hero/Navbar/Navbar.tsx b/src/components/hero/Navbar/Navbar.tsx
+index 4ccdbc9..4cf9d91 100644
+--- a/src/components/hero/Navbar/Navbar.tsx
++++ b/src/components/hero/Navbar/Navbar.tsx
+@@ -11,13 +11,11 @@ import { cn } from "@/lib/utils";
+ const links = [
+     { to: "/industries", label: "Industries" },
+     { to: "/cryptocurrencies", label: "Cryptocurrencies" },
++    { to: "/payout", label: "Payout" },
+     { to: "/about", label: "About" },
+     { to: "/integration-docs", label: "Integration Doc" },
+     { to: "/api-reference", label: "Api Reference" },
+-
+-
+-
+-
++    { to: "/transaction", label: "Transaction" },
+ ] as const;
+ 
+ export function Navbar() {

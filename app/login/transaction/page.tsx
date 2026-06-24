@@ -1,412 +1,742 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+    LayoutDashboard,
+    Receipt,
+    Send,
+    Settings,
+    LogOut,
+    Search,
+    Calendar,
+    Coins,
+    Wallet,
+    ArrowRight,
+    Trash2,
+    Key,
+    CheckCircle,
+    Clock,
+    AlertCircle,
+    Copy,
+    Check,
+    Lock,
+    Upload
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@hooks";
+import AddressModal from "@components/Modals/AddressModal";
+import ApiKeyModal from "@components/Modals/ApiKeyModal";
+import DeleteAccount from "@components/Modals/DeleteAccount";
 
-export default function LoginPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordError, setPasswordError] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
+export default function DashboardPage() {
+    const [activeView, setActiveView] = useState<'home' | 'transaction' | 'payout' | 'settings'>('transaction');
+    const [email, setEmail] = useState("merchant@gmail.com");
     const router = useRouter();
 
-    const isEmailValid = email.toLowerCase().endsWith("@gmail.com") || email.toLowerCase().endsWith("@gamil.com");
-    const isPasswordValid = password.length >= 8 && password.length <= 12;
+    const searchVal = typeof window !== "undefined" ? window.location.search : "";
+    const pathVal = typeof window !== "undefined" ? window.location.pathname : "";
 
-    const handleLoginSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!isEmailValid || !isPasswordValid) return;
-
-        // Check stored user from localStorage
-        const storedUser = localStorage.getItem("registered_user");
-        if (storedUser) {
-            const { email: savedEmail, password: savedPassword } = JSON.parse(storedUser);
-            if (email.toLowerCase() !== savedEmail.toLowerCase()) {
-                toast.error("User not found", {
-                    description: "This email is not registered. Please sign up.",
-                });
-                return;
-            }
-            if (password !== savedPassword) {
-                setPasswordError("✗ Password does not match the password entered during signup");
-                toast.error("Incorrect password", {
-                    description: "Please check your password and try again.",
-                });
-                return;
-            }
+    useEffect(() => {
+        const params = new URLSearchParams(searchVal);
+        const viewParam = params.get("view");
+        if (viewParam === "payout") {
+            setActiveView("payout");
+        } else if (viewParam === "settings") {
+            setActiveView("settings");
         } else {
-            toast.error("User not found", {
-                description: "No registered user found. Please sign up first.",
-            });
+            setActiveView("transaction");
+        }
+    }, [searchVal, pathVal]);
+
+    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings') => {
+        if (view === 'transaction') {
+            router.push('/login/transaction');
+        } else if (view === 'home') {
+            router.push('/login/home');
+        } else if (view === 'settings') {
+            router.push('/login/AccountSetting');
+        } else if (view === 'payout') {
+            router.push('/login/payout');
+        }
+    };
+
+    const { logout, changePassword } = useAuth();
+
+    // Modals states
+    const [openAddressModal, setOpenAddressModal] = useState(false);
+    const [singleNetwork, setSingleNetwork] = useState<any>(null);
+    const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
+    const [generatedApiKey, setGeneratedApiKey] = useState("");
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+
+    // Payment settings states
+    const [businessName, setBusinessName] = useState("");
+    const [selectedCurrency, setSelectedCurrency] = useState("");
+    const [selectedCryptos, setSelectedCryptos] = useState<number[]>([]);
+    const [openCryptoDropdown, setOpenCryptoDropdown] = useState(false);
+    const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
+    const [logoFilename, setLogoFilename] = useState<string | null>(null);
+    const [fiatCurrencies, setFiatCurrencies] = useState<any[]>([]);
+    const [cryptoOptions, setCryptoOptions] = useState<any[]>([]);
+
+    const getAuthToken = () => {
+        let token = localStorage.getItem("token");
+        if (!token) {
+            const raw = localStorage.getItem("loginSuccessRoyalGame");
+            if (raw) {
+                try {
+                    token = JSON.parse(raw);
+                } catch {
+                    token = raw;
+                }
+            }
+        }
+        return token;
+    };
+
+    const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                toast.error("Image size must not exceed 2 MB.");
+                return;
+            }
+            setLogoFile(file);
+            setLogoPreview(URL.createObjectURL(file));
+
+            const token = getAuthToken();
+            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                toast.loading("Uploading logo...", { id: "logo-upload" });
+                const res = await fetch(`${BASE_URL}/upload`, {
+                    method: "POST",
+                    headers: {
+                        ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+                    },
+                    body: formData,
+                });
+                toast.dismiss("logo-upload");
+                if (res.ok) {
+                    const responseData = await res.json();
+                    const uploadedFilename = responseData?.data?.meta?.filename || responseData?.meta?.filename || responseData?.filename;
+                    if (uploadedFilename) {
+                        setLogoFilename(uploadedFilename);
+                        toast.success("Logo uploaded successfully!");
+                    } else {
+                        toast.error("Failed to parse uploaded logo filename.");
+                    }
+                } else {
+                    const errText = await res.text();
+                    toast.error(`Upload failed: ${errText || res.statusText}`);
+                }
+            } catch (err: any) {
+                toast.dismiss("logo-upload");
+                console.error("Error uploading logo:", err);
+                toast.error(`Error uploading logo: ${err.message}`);
+            }
+        }
+    };
+
+    const handleSavePaymentSettings = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!logoFilename && !logoPreview) {
+            toast.error("Please upload a business logo.");
+            return;
+        }
+        if (!businessName.trim()) {
+            toast.error("Please enter a business name.");
+            return;
+        }
+        if (!selectedCurrency) {
+            toast.error("Please select a currency.");
+            return;
+        }
+        if (selectedCryptos.length === 0) {
+            toast.error("Please select at least one cryptocurrency.");
             return;
         }
 
-        setPasswordError("");
-        toast.success("Successfully logged in!", {
-            description: `Welcome back, ${email}`,
-        });
-        router.push("/");
+        const token = getAuthToken();
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+
+        const payload = {
+            name: businessName,
+            logo: logoFilename || logoPreview,
+            fiatCurrencyId: Number(selectedCurrency),
+            paymentOptionIds: selectedCryptos,
+        };
+
+        try {
+            toast.loading("Saving payment settings...", { id: "save-settings" });
+            const res = await fetch(`${BASE_URL}/merchants/me/business`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(payload),
+            });
+            toast.dismiss("save-settings");
+            if (res.ok) {
+                toast.success("Payment settings updated successfully!");
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                toast.error(errData?.error?.message || errData?.message || "Failed to update payment settings");
+            }
+        } catch (error: any) {
+            toast.dismiss("save-settings");
+            console.error("Error saving payment settings:", error);
+            toast.error("An error occurred during save.");
+        }
+    };
+
+    // Load user email from local storage if available
+    useEffect(() => {
+        const storedUser = localStorage.getItem("registered_user");
+        if (storedUser) {
+            try {
+                const parsed = JSON.parse(storedUser);
+                if (parsed.email) setEmail(parsed.email);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    }, []);
+
+    // ----------------------------------------------------------------
+    // TRANSACTIONS VIEW STATES & LOGIC
+    // ----------------------------------------------------------------
+    const [status, setStatus] = useState("all");
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
+    const [search, setSearch] = useState("");
+    const [transactions, setTransactions] = useState<any[]>([]);
+
+    // Set current month dates first
+    useEffect(() => {
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        setFromDate(firstDay.toISOString().split("T")[0]);
+        setToDate(lastDay.toISOString().split("T")[0]);
+    }, []);
+
+    // Fetch transactions after dates are available
+    useEffect(() => {
+        if (!fromDate || !toDate || activeView !== 'transaction') return;
+
+        let token = localStorage.getItem("token");
+        if (!token) {
+            const raw = localStorage.getItem("loginSuccessRoyalGame");
+            if (raw) {
+                try {
+                    token = JSON.parse(raw);
+                } catch {
+                    token = raw;
+                }
+            }
+        }
+
+        let url = `${process.env.NEXT_PUBLIC_API_URL}/payments?skip=0&take=8&fromDate=${fromDate}&toDate=${toDate}`;
+
+        if (status !== "all") {
+            url += `&status=${status}`;
+        }
+
+        console.log("API URL:", url);
+
+        fetch(url, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`HTTP Error: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then((data) => {
+                console.log("API RESPONSE:", data);
+
+                let rawList: any[] = [];
+                if (Array.isArray(data)) {
+                    rawList = data;
+                } else if (data && Array.isArray(data.data)) {
+                    rawList = data.data;
+                } else if (data && Array.isArray(data.payments)) {
+                    rawList = data.payments;
+                } else if (data && Array.isArray(data.transactions)) {
+                    rawList = data.transactions;
+                }
+
+                const mapped = rawList
+                    .map((tx: any) => {
+                        if (!tx) return null;
+                        const id = tx.id || tx.paymentToken || tx.token || tx._id || "";
+
+                        let amount = tx.amount || tx.fiatValue || tx.value || "";
+                        if (tx.fiatCurrency?.symbol && !amount.toString().includes(tx.fiatCurrency.symbol)) {
+                            amount = `${amount} ${tx.fiatCurrency.symbol}`;
+                        }
+
+                        const tokenSymbol = tx.token || tx.symbol || tx.coin || (tx.options && tx.options[0]?.name) || "";
+
+                        let status = tx.status || "";
+                        if (!status) {
+                            if (tx.isPaid) status = "Paid";
+                            else if (tx.isPartial) status = "Partial";
+                            else if (tx.isExpired) status = "Expired";
+                            else status = "Pending";
+                        }
+                        if (status) {
+                            status = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+                        }
+
+                        let date = tx.createdAt || tx.created_at || tx.date || "";
+                        if (date) {
+                            try {
+                                date = date.includes("T") ? date.split("T")[0] : date;
+                            } catch { }
+                        }
+
+                        return {
+                            id,
+                            amount,
+                            token: tokenSymbol,
+                            status,
+                            createdAt: date
+                        };
+                    })
+                    .filter(Boolean);
+
+                setTransactions(mapped);
+                console.log("Transaction Response:", mapped);
+            })
+            .catch((err) => {
+                console.error("API Error:", err);
+                setTransactions([]);
+            });
+    }, [fromDate, toDate, status, activeView]);
+
+    const filteredTransactions = transactions.filter((tx) => {
+        if (!tx) return false;
+        const statusMatch =
+            status === "all" ||
+            tx?.status?.toLowerCase() === status.toLowerCase();
+        const searchMatch =
+            String(tx?.id || "").toLowerCase().includes(search.toLowerCase()) ||
+            String(tx?.token || "").toLowerCase().includes(search.toLowerCase());
+        return statusMatch && searchMatch;
+    });
+
+    // ----------------------------------------------------------------
+    // PAYOUT VIEW STATES & LOGIC
+    // ----------------------------------------------------------------
+    const [networks, setNetworks] = useState<any[]>([]);
+    const [openNetwork, setOpenNetwork] = useState<string | null>(null);
+    const [selectedCoin, setSelectedCoin] = useState<any>(null);
+    const [payoutAmount, setPayoutAmount] = useState("");
+    const [payoutWallet, setPayoutWallet] = useState("");
+
+    useEffect(() => {
+        if (activeView === 'payout' || activeView === 'settings') {
+            fetch("https://sandbox-api.chainpay.biz/networks")
+                .then((res) => res.json())
+                .then((data) => {
+                    setNetworks(data);
+                })
+                .catch((err) => console.error(err));
+        }
+    }, [activeView]);
+
+    const handleCreatePayout = async () => {
+        if (!selectedCoin) {
+            toast.error("Please select a coin");
+            return;
+        }
+        if (!payoutWallet) {
+            toast.error("Please enter a wallet address");
+            return;
+        }
+        if (!payoutAmount) {
+            toast.error("Please enter an amount");
+            return;
+        }
+
+        const payload = {
+            symbol: selectedCoin.symbol,
+            wallet: payoutWallet,
+            amount: payoutAmount,
+        };
+
+        try {
+            toast.loading("Creating payout...", { id: "payout-action" });
+            const response = await fetch(
+                `https://sandbox-api.chainpay.biz/payouts/select/${selectedCoin.symbol}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+            toast.dismiss("payout-action");
+            if (response.ok) {
+                toast.success("Payout created successfully!");
+                setPayoutAmount("");
+                setPayoutWallet("");
+                setSelectedCoin(null);
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                toast.error(errData.message || "Failed to create payout");
+            }
+        } catch (error) {
+            toast.dismiss("payout-action");
+            console.error("Payout Error:", error);
+            toast.error("An error occurred during payout creation.");
+        }
+    };
+
+    // ----------------------------------------------------------------
+    // SETTINGS VIEW STATES & LOGIC
+    // ----------------------------------------------------------------
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [copiedKey, setCopiedKey] = useState(false);
+
+    const handleGenerateApiKey = async () => {
+        const token = getAuthToken();
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+
+        try {
+            toast.loading("Fetching API Key...", { id: "api-key" });
+            const res = await fetch(`${BASE_URL}/merchants/me/api-key`, {
+                method: "GET",
+                headers: {
+                    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+                },
+            });
+            toast.dismiss("api-key");
+
+            if (res.ok) {
+                const responseData = await res.json();
+                const key = responseData?.data?.apiKey || responseData?.apiKey || responseData?.data || responseData;
+                if (key && typeof key === "string") {
+                    setGeneratedApiKey(key);
+                    setOpenApiKeyModal(true);
+                    return;
+                }
+            }
+
+            // If GET doesn't return a key, generate a new one
+            await handleRegenerateApiKey();
+        } catch (error) {
+            toast.dismiss("api-key");
+            console.error("Error loading API Key, trying to generate:", error);
+            await handleRegenerateApiKey();
+        }
+    };
+
+    const handleRegenerateApiKey = async () => {
+        const token = getAuthToken();
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+
+        try {
+            toast.loading("Generating API Key...", { id: "api-key" });
+            const res = await fetch(`${BASE_URL}/merchants/me/api-key`, {
+                method: "POST",
+                headers: {
+                    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+                },
+            });
+            toast.dismiss("api-key");
+
+            if (res.ok) {
+                const responseData = await res.json();
+                const key = responseData?.data?.apiKey || responseData?.apiKey || responseData?.data || responseData;
+                if (key && typeof key === "string") {
+                    setGeneratedApiKey(key);
+                    setOpenApiKeyModal(true);
+                    toast.success("API Key generated successfully!");
+                } else {
+                    toast.error("Failed to parse generated API key.");
+                }
+            } else {
+                const errText = await res.text();
+                toast.error(`Failed to generate API Key: ${errText || res.statusText}`);
+            }
+        } catch (error: any) {
+            toast.dismiss("api-key");
+            console.error("Error generating API Key:", error);
+            toast.error(`Error generating API Key: ${error.message || error}`);
+        }
+    };
+
+    const handleChangePasswordSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!oldPassword || !newPassword) {
+            toast.error("All fields are required");
+            return;
+        }
+        if (newPassword.length < 8 || newPassword.length > 12) {
+            toast.error("New password must be between 8 and 12 characters");
+            return;
+        }
+
+        try {
+            toast.loading("Updating password...", { id: "change-pwd" });
+            const response = await changePassword({ oldPassword, newPassword });
+            toast.dismiss("change-pwd");
+            if (response?.success) {
+                setOldPassword("");
+                setNewPassword("");
+            }
+        } catch (error) {
+            toast.dismiss("change-pwd");
+            console.error(error);
+            toast.error("Failed to change password");
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (e) {
+            console.error(e);
+            localStorage.removeItem('token');
+            localStorage.removeItem('loginSuccessRoyalGame');
+            router.push("/login");
+        }
     };
 
     return (
-        <div className="relative w-full min-h-[calc(100vh-80px)] py-12 md:py-20 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center px-4">
+        <div className="relative w-full min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-x-hidden md:overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 flex flex-col md:flex-row">
+            {/* Hide the footer on the dashboard page */}
+            <style dangerouslySetInnerHTML={{ __html: 'footer { display: none !important; }' }} />
 
             {/* Background Blobs */}
-            <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400/30 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400/30 rounded-full blur-[120px] animate-pulse pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/30 rounded-full blur-[120px] animate-pulse pointer-events-none" />
 
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/30 rounded-full blur-[120px] animate-pulse" />
-
-            {/* Floating Crypto Balls */}
-            {/* Floating Crypto Balls */}
-            {/* 1. MST 3D - Top Left (Large - Foreground) */}
-            <div className="absolute top-16 left-8 md:left-24 w-44 h-52 flex flex-col items-center justify-between z-0 pointer-events-none">
-                <motion.div
-                    animate={{ y: [-18, 18, -18], rotate: [-6, 6, -6] }}
-                    transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-                    className="w-44 h-44 drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)]"
-                >
-                    <Image
-                        src="/3Dlogoballs/Mstc3d.png"
-                        alt="MST 3D"
-                        width={176}
-                        height={176}
-                        priority
-                        className="w-full h-full object-contain"
-                    />
-                </motion.div>
-                <motion.div
-                    animate={{ scale: [0.7, 1.25, 0.7], opacity: [0.15, 0.5, 0.15] }}
-                    transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-                    className="w-28 h-2.5 bg-slate-900/20 blur-md rounded-full mt-2"
-                />
+            {/* Floating 3D Balls */}
+            <div className="absolute top-16 left-8 md:left-24 w-32 h-32 z-0 pointer-events-none opacity-40 blur-[1px]">
+                <Image src="/3Dlogoballs/Mstc3d.png" alt="MST 3D" width={128} height={128} className="object-contain" />
+            </div>
+            <div className="absolute bottom-16 left-12 w-32 h-32 z-0 pointer-events-none opacity-40 blur-[1px]">
+                <Image src="/3Dlogoballs/tron3d.png" alt="Tron 3D" width={128} height={128} className="object-contain" />
+            </div>
+            <div className="absolute top-28 right-8 w-32 h-32 z-0 pointer-events-none opacity-40 blur-[1px]">
+                <Image src="/3Dlogoballs/bnb3d.png" alt="BNB 3D" width={128} height={128} className="object-contain" />
             </div>
 
-            {/* 2. Tron 3D - Bottom Left (Large - Midground) */}
-            <div className="absolute bottom-16 left-12 md:left-28 w-40 h-48 flex flex-col items-center justify-between z-0 pointer-events-none">
-                <motion.div
-                    animate={{ y: [15, -15, 15], rotate: [5, -5, 5] }}
-                    transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
-                    className="w-60 h-60 drop-shadow-[0_15px_25px_rgba(0,0,0,0.12)]"
-                >
-                    <Image
-                        src="/3Dlogoballs/tron3d.png"
-                        alt="Tron 3D"
-                        width={160}
-                        height={160}
-                        priority
-                        className="w-full h-full object-contain"
-                    />
-                </motion.div>
-                <motion.div
-                    animate={{ scale: [1.2, 0.75, 1.2], opacity: [0.45, 0.15, 0.45] }}
-                    transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
-                    className="w-24 h-2 bg-slate-900/20 blur-md rounded-full mt-2"
-                />
-            </div>
-
-            {/* 3. BNB 3D - Top Right (Large - Midground) */}
-            <div className="absolute top-28 right-8 md:right-24 w-40 h-48 flex flex-col items-center justify-between z-0 pointer-events-none">
-                <motion.div
-                    animate={{ y: [-15, 15, -15], rotate: [-5, 5, -5] }}
-                    transition={{ repeat: Infinity, duration: 9, ease: "easeInOut" }}
-                    className="w-60 h-60 drop-shadow-[0_15px_25px_rgba(0,0,0,0.12)]"
-                >
-                    <Image
-                        src="/3Dlogoballs/bnb3d.png"
-                        alt="BNB 3D"
-                        width={144}
-                        height={144}
-                        priority
-                        className="w-full h-full object-contain"
-                    />
-                </motion.div>
-                <motion.div
-                    animate={{ scale: [0.75, 1.2, 0.75], opacity: [0.15, 0.4, 0.15] }}
-                    transition={{ repeat: Infinity, duration: 9, ease: "easeInOut" }}
-                    className="w-22 h-2 bg-slate-900/20 blur-md rounded-full mt-2"
-                />
-            </div>
-
-            {/* 4. MST 3D - Bottom Right (Medium - Background) */}
-            <div className="absolute bottom-24 right-16 md:right-32 w-28 h-36 flex flex-col items-center justify-between z-0 pointer-events-none">
-                <motion.div
-                    animate={{ y: [12, -12, 12], rotate: [8, -8, 8] }}
-                    transition={{ repeat: Infinity, duration: 7.5, delay: -2.5, ease: "easeInOut" }}
-                    className="w-30 h-30 drop-shadow-[0_10px_20px_rgba(0,0,0,0.1)]"
-                >
-                    <Image
-                        src="/3Dlogoballs/Mstc3d.png"
-                        alt="MST 3D"
-                        width={112}
-                        height={112}
-                        priority
-                        className="w-full h-full object-contain"
-                    />
-                </motion.div>
-                <motion.div
-                    animate={{ scale: [1.15, 0.8, 1.15], opacity: [0.4, 0.15, 0.4] }}
-                    transition={{ repeat: Infinity, duration: 7.5, delay: -2.5, ease: "easeInOut" }}
-                    className="w-18 h-1.5 bg-slate-900/20 blur-md rounded-full mt-1.5"
-                />
-            </div>
-
-            {/* 5. MST 3D - Top Center/Left (Small - Deep Background Blur) */}
-            <div className="absolute top-12 left-1/3 w-16 h-22 flex flex-col items-center justify-between z-0 pointer-events-none blur-[1px]">
-                <motion.div
-                    animate={{ y: [-8, 8, -8], rotate: [-4, 4, -4] }}
-                    transition={{ repeat: Infinity, duration: 12, delay: -4, ease: "easeInOut" }}
-                    className="w-18 h-18 drop-shadow-[0_8px_15px_rgba(0,0,0,0.08)]"
-                >
-                    <Image
-                        src="/3Dlogoballs/bnb3d.png"
-                        alt="MST 3D"
-                        width={64}
-                        height={64}
-                        priority
-                        className="w-full h-full object-contain"
-                    />
-                </motion.div>
-                <motion.div
-                    animate={{ scale: [0.8, 1.2, 0.8], opacity: [0.1, 0.25, 0.1] }}
-                    transition={{ repeat: Infinity, duration: 12, delay: -4, ease: "easeInOut" }}
-                    className="w-10 h-1 bg-slate-900/15 blur-sm rounded-full mt-1"
-                />
-            </div>
-
-            {/* 6. Tron 3D - Center Right (Small - Deep Background Blur) */}
-            <div className="absolute top-1/2 right-[33%] w-20 h-26 flex flex-col items-center justify-between z-0 pointer-events-none blur-[0.5px]">
-                <motion.div
-                    animate={{ y: [10, -10, 10], rotate: [6, -6, 6] }}
-                    transition={{ repeat: Infinity, duration: 11, delay: -1.5, ease: "easeInOut" }}
-                    className="w-20 h-20 drop-shadow-[0_8px_15px_rgba(0,0,0,0.08)]"
-                >
-                    <Image
-                        src="/3Dlogoballs/tron3d.png"
-                        alt="Tron 3D"
-                        width={80}
-                        height={80}
-                        priority
-                        className="w-full h-full object-contain"
-                    />
-                </motion.div>
-                <motion.div
-                    animate={{ scale: [1.2, 0.8, 1.2], opacity: [0.3, 0.1, 0.3] }}
-                    transition={{ repeat: Infinity, duration: 11, delay: -1.5, ease: "easeInOut" }}
-                    className="w-12 h-1 bg-slate-900/15 blur-sm rounded-full mt-1"
-                />
-            </div>
-
-            {/* 7. BNB 3D - Bottom Left (Small - Background) */}
-            <div className="absolute bottom-1/3 left-1/4 w-24 h-30 flex flex-col items-center justify-between z-0 pointer-events-none">
-                <motion.div
-                    animate={{ y: [-12, 12, -12], rotate: [-8, 8, -8] }}
-                    transition={{ repeat: Infinity, duration: 8.5, delay: -5, ease: "easeInOut" }}
-                    className="w-24 h-24 drop-shadow-[0_8px_15px_rgba(0,0,0,0.08)]"
-                >
-                    <Image
-                        src="/3Dlogoballs/bnb3d.png"
-                        alt="BNB 3D"
-                        width={96}
-                        height={96}
-                        priority
-                        className="w-full h-full object-contain"
-                    />
-                </motion.div>
-                <motion.div
-                    animate={{ scale: [0.75, 1.2, 0.75], opacity: [0.15, 0.35, 0.15] }}
-                    transition={{ repeat: Infinity, duration: 8.5, delay: -5, ease: "easeInOut" }}
-                    className="w-16 h-1 bg-slate-900/20 blur-sm rounded-full mt-1"
-                />
-            </div>
-
-            {/* Login Card */}
-            <motion.div
-                initial={{ opacity: 0, y: 70 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-                className="relative z-10 w-full max-w-md rounded-3xl border border-white/30 bg-white/10 backdrop-blur-xl p-8 shadow-[0_20px_80px_rgba(37,99,235,0.25)]"
-            >
-                {/* Logo */}
-
-                <h2 className="text-center text-3xl font-bold text-slate-900 mb-2">
-                    Welcome Back
-                </h2>
-
-                <p className="text-center text-slate-500 mb-8">
-                    Sign in to your account
-                </p>
-
-                <form onSubmit={handleLoginSubmit}>
-                    {/* Email */}
-                    <div className="mb-5">
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Email Address
-                        </label>
-
-                        <div className="relative group">
-                            <Mail
-                                size={18}
-                                className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-200
-                                    ${email === ""
-                                        ? "text-slate-400 group-focus-within:text-blue-500"
-                                        : isEmailValid
-                                            ? "text-green-500 group-focus-within:text-green-600"
-                                            : "text-rose-400 group-focus-within:text-rose-500"
-                                    }`}
-                            />
-
-                            <input
-                                type="email"
-                                placeholder="Enter email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className={`w-full rounded-xl border bg-white/70 py-3 pl-11 pr-4 outline-none transition duration-200
-                                    ${email === ""
-                                        ? "border-blue-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                                        : isEmailValid
-                                            ? "border-green-300 hover:border-green-400 focus:border-green-500 focus:ring-2 focus:ring-green-100 text-slate-800"
-                                            : "border-rose-300 hover:border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 text-slate-800"
-                                    }`}
-                            />
-                        </div>
-                        <p className={`mt-2 text-xs transition-colors duration-200 ${email === ""
-                            ? "text-slate-500"
-                            : isEmailValid
-                                ? "text-green-600"
-                                : "text-rose-500 font-medium"
-                            }`}>
-                            {email === ""
-                                ? "Suggestion: Use a Gmail address (e.g. user@gmail.com)"
-                                : isEmailValid
-                                    ? "✓ Valid Gmail address"
-                                    : "✗ Email must end with @gmail.com"
-                            }
-                        </p>
-                    </div>
-
-                    {/* Password */}
-                    <div className="mb-5">
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Password
-                        </label>
-
-                        <div className="relative group">
-                            <Lock
-                                size={18}
-                                className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-200
-                                    ${password === ""
-                                        ? "text-slate-400 group-focus-within:text-blue-500"
-                                        : isPasswordValid
-                                            ? "text-green-500 group-focus-within:text-green-600"
-                                            : "text-rose-400 group-focus-within:text-rose-500"
-                                    }`}
-                            />
-
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Enter password"
-                                value={password}
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    setPasswordError("");
-                                }}
-                                className={`w-full rounded-xl border bg-white/70 py-3 pl-11 pr-11 outline-none transition duration-200
-                                    ${password === ""
-                                        ? "border-blue-200 hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                                        : isPasswordValid
-                                            ? "border-green-300 hover:border-green-400 focus:border-green-500 focus:ring-2 focus:ring-green-100 text-slate-800"
-                                            : "border-rose-300 hover:border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 text-slate-800"
-                                    }`}
-                            />
-
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer focus:outline-none bg-transparent border-none"
-                            >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
-                        </div>
-                        <p className={`mt-2 text-xs transition-colors duration-200 ${passwordError
-                            ? "text-rose-500 font-medium"
-                            : password === ""
-                                ? "text-slate-500"
-                                : isPasswordValid
-                                    ? "text-green-600"
-                                    : "text-rose-500 font-medium"
-                            }`}>
-                            {passwordError || (
-                                password === ""
-                                    ? "Suggestion: Choose a password with 8 to 12 characters"
-                                    : isPasswordValid
-                                        ? `✓ Valid password length (${password.length} characters)`
-                                        : password.length < 8
-                                            ? `✗ Too short (currently ${password.length} characters, need at least 8)`
-                                            : `✗ Too long (currently ${password.length} characters, need at most 12)`
-                            )}
-                        </p>
-                    </div>
-
-                    {/* Remember */}
-                    <div className="mb-6">
-                        <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
-                                <input
-                                    type="checkbox"
-                                    required
-                                    checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                                />
-                                Remember Me
-                            </label>
-
-                            <button type="button" className="text-blue-600 text-sm hover:underline">
-                                Forgot Password?
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Login Button */}
-                    <motion.button
-                        type="submit"
-                        whileHover={{ scale: (isEmailValid && isPasswordValid) ? 1.03 : 1 }}
-                        whileTap={{ scale: (isEmailValid && isPasswordValid) ? 0.98 : 1 }}
-                        disabled={!(isEmailValid && isPasswordValid)}
-                        className={`w-full rounded-xl py-3 font-semibold text-white shadow-lg transition-all ${(isEmailValid && isPasswordValid)
-                            ? "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 cursor-pointer shadow-blue-500/25"
-                            : "bg-slate-300 cursor-not-allowed shadow-none"
-                            }`}
-                    >
-                        Sign In
-                    </motion.button>
-                </form>
-
-                {/* Divider */}
-                <div className="my-6 flex items-center">
-                    <div className="h-px flex-1 bg-slate-300" />
-                    <span className="px-3 text-slate-500 text-sm">OR</span>
-                    <div className="h-px flex-1 bg-slate-300" />
+            {/* Left Sidebar */}
+            <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/40 bg-white/30 backdrop-blur-xl shadow-lg p-6 flex flex-col justify-between shrink-0 md:h-full z-20 md:rounded-r-[32px]">
+                <div>
+                    {/* Navigation Menu */}
+                    <nav className="space-y-1">
+                        <button
+                            onClick={() => handleNav('home')}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer ${activeView === 'home'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/30 hover:text-blue-600'
+                                }`}
+                        >
+                            <LayoutDashboard size={18} />
+                            Home
+                        </button>
+                        <button
+                            onClick={() => handleNav('transaction')}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer ${activeView === 'transaction'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/30 hover:text-blue-600'
+                                }`}
+                        >
+                            <Receipt size={18} />
+                            Transaction
+                        </button>
+                        <button
+                            onClick={() => handleNav('payout')}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer ${activeView === 'payout'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/30 hover:text-blue-600'
+                                }`}
+                        >
+                            <Send size={18} />
+                            Payout
+                        </button>
+                        <button
+                            onClick={() => handleNav('settings')}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer ${activeView === 'settings'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/30 hover:text-blue-600'
+                                }`}
+                        >
+                            <Settings size={18} />
+                            Account Setting
+                        </button>
+                    </nav>
                 </div>
 
-                {/* Google Login */}
-                {/* <button className="w-full rounded-xl border border-slate-200 bg-white py-3 font-medium hover:bg-slate-50 transition">
-                    Continue with Google
-                </button> */}
+                {/* Bottom User Profile & Logout */}
+                <div className="mt-6 pt-4 border-t border-white/20 flex flex-col gap-3">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-rose-600 hover:bg-rose-50/50 transition-all duration-200 cursor-pointer"
+                    >
+                        <LogOut size={18} />
+                        Log Out
+                    </button>
+                </div>
+            </div>
 
-                <p className="mt-6 text-center text-sm text-slate-600">
-                    Don't have an account?{" "}
-                    <Link href="/signup" className="font-semibold text-blue-600 hover:underline">
-                        Sign Up
-                    </Link>
-                </p>
-            </motion.div>
+            {/* Right Content Panel */}
+            <div className="flex-1 p-6 md:p-10 relative z-10 md:h-full overflow-y-auto">
+                <AnimatePresence mode="wait">
+
+
+                    {/* ---------------------------------------------------- */}
+                    {/* TRANSACTION VIEW */}
+                    {/* ---------------------------------------------------- */}
+                    {activeView === 'transaction' && (
+                        <motion.div
+                            key="transaction"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            className="space-y-6"
+                        >
+                            <div>
+                                <h1 className="text-3xl font-extrabold text-slate-900">Transactions</h1>
+                                <p className="text-slate-500 text-sm mt-1">Track and audit crypto payments received by your system.</p>
+                            </div>
+
+                            {/* Filters */}
+                            <div className="rounded-3xl border border-white/40 bg-white/60 p-6 shadow-xl backdrop-blur-md">
+                                <div className="grid gap-4 md:grid-cols-4">
+                                    <select
+                                        value={status}
+                                        onChange={(e) => setStatus(e.target.value)}
+                                        className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm"
+                                    >
+                                        <option value="all">All Statuses</option>
+                                        <option value="paid">Paid</option>
+                                        <option value="partial">Partial</option>
+                                        <option value="expired">Expired</option>
+                                    </select>
+
+                                    <input
+                                        type="date"
+                                        value={fromDate}
+                                        onChange={(e) => setFromDate(e.target.value)}
+                                        className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm"
+                                    />
+
+                                    <input
+                                        type="date"
+                                        value={toDate}
+                                        onChange={(e) => setToDate(e.target.value)}
+                                        className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm"
+                                    />
+
+                                    <div className="relative">
+                                        <Search
+                                            size={16}
+                                            className="absolute left-3.5 top-3.5 text-slate-400"
+                                        />
+                                        <input
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            placeholder="Search by ID/Token..."
+                                            className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Transactions Table */}
+                            <div className="overflow-hidden rounded-3xl border border-white/40 bg-white/60 shadow-xl backdrop-blur-md">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm text-left">
+                                        <thead className="bg-blue-600 text-white font-bold text-xs uppercase tracking-wider">
+                                            <tr>
+                                                <th className="p-4">Transaction ID</th>
+                                                <th className="p-4">Fiat Value</th>
+                                                <th className="p-4">Description</th>
+                                                <th className="p-4">Token</th>
+                                                <th className="p-4">Expire At</th>
+                                                <th className="p-4">Settled At</th>
+                                                <th className="p-4">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {filteredTransactions.length > 0 ? (
+                                                filteredTransactions.map((tx) => (
+                                                    <tr key={tx.id} className="hover:bg-blue-50/50 transition">
+                                                        <td className="p-4 font-mono font-medium text-slate-700">{tx.id}</td>
+                                                        <td className="p-4 font-bold text-slate-900">{tx.amount}</td>
+                                                        <td className="p-4 font-semibold text-slate-600">{tx.token}</td>
+                                                        <td className="p-4">
+                                                            <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tx.status === "Paid"
+                                                                ? "bg-green-100 text-green-600"
+                                                                : tx.status === "Partial"
+                                                                    ? "bg-amber-100 text-amber-600"
+                                                                    : "bg-red-100 text-red-600"
+                                                                }`}>
+                                                                {tx.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="p-4 text-slate-500">{tx.createdAt}</td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={5} className="p-8 text-center text-slate-400">
+                                                        No transactions found for this period.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* MODALS INTEGRATION */}
+            {openAddressModal && singleNetwork && (
+                <AddressModal
+                    setOpen={setOpenAddressModal}
+                    singleNetwork={singleNetwork}
+                    setSingleNetwork={setSingleNetwork}
+                    refreshFunction={() => { }}
+                />
+            )}
+
+            {openApiKeyModal && (
+                <ApiKeyModal
+                    handleClose={() => setOpenApiKeyModal(false)}
+                    apiKey={generatedApiKey}
+                    onRegenerate={handleRegenerateApiKey}
+                />
+            )}
+
+            {openDeleteModal && (
+                <DeleteAccount
+                    setAccountShow={setOpenDeleteModal}
+                />
+            )}
         </div>
     );
 }

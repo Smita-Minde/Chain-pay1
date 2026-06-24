@@ -1,0 +1,233 @@
+﻿diff --git a/src/components/hero/Navbar/Navbar.tsx b/src/components/hero/Navbar/Navbar.tsx
+index 4cf9d91..166707f 100644
+--- a/src/components/hero/Navbar/Navbar.tsx
++++ b/src/components/hero/Navbar/Navbar.tsx
+@@ -3,22 +3,62 @@
+ import Link from "next/link";
+ import { usePathname } from "next/navigation";
+ import { Button } from "@/components/ui/button";
+-import { Menu, ArrowRight } from "lucide-react";
++import { Menu, ArrowRight, Home, User, ChevronDown, UserCog, Mail } from "lucide-react";
+ import { useState } from "react";
+ import Image from "next/image";
+ import { cn } from "@/lib/utils";
++import { useEffect } from "react";
+ 
+ const links = [
+     { to: "/industries", label: "Industries" },
+     { to: "/cryptocurrencies", label: "Cryptocurrencies" },
+-    { to: "/payout", label: "Payout" },
+     { to: "/about", label: "About" },
+     { to: "/integration-docs", label: "Integration Doc" },
+     { to: "/api-reference", label: "Api Reference" },
+-    { to: "/transaction", label: "Transaction" },
+ ] as const;
+ 
+ export function Navbar() {
++
++    const [isLoggedIn, setIsLoggedIn] = useState(false);
++    const [email, setEmail] = useState("");
++    const [dropdownOpen, setDropdownOpen] = useState(false);
++
++    useEffect(() => {
++        if (typeof window !== "undefined") {
++            const token = localStorage.getItem("token");
++            setIsLoggedIn(!!token);
++            const storedUser = localStorage.getItem("registered_user");
++            if (storedUser) {
++                try {
++                    const parsed = JSON.parse(storedUser);
++                    if (parsed.email) setEmail(parsed.email);
++                } catch (e) {
++                    console.error(e);
++                }
++            }
++        }
++    }, []);
++
++    useEffect(() => {
++        if (!dropdownOpen) return;
++        const handleOutsideClick = (e: MouseEvent) => {
++            const target = e.target as HTMLElement;
++            if (!target.closest(".email-dropdown-container")) {
++                setDropdownOpen(false);
++            }
++        };
++        document.addEventListener("mousedown", handleOutsideClick);
++        return () => document.removeEventListener("mousedown", handleOutsideClick);
++    }, [dropdownOpen]);
++
++    const formatEmail = (emailStr: string) => {
++        if (!emailStr) return "";
++        const [username, domain] = emailStr.split("@");
++        if (!domain) return emailStr;
++        if (username.length <= 6) return emailStr;
++        return `${username.slice(0, 3)}...${username.slice(-2)}@${domain}`;
++    };
++
+     const [open, setOpen] = useState(false);
+     const pathname = usePathname();
+ 
+@@ -61,7 +101,7 @@ export function Navbar() {
+                         })}
+                     </ul>
+ 
+-                    <div className="flex items-center gap-2">
++                    {/* <div className="flex items-center gap-2">
+                         <Button
+                             variant="ghost"
+                             className="hidden sm:inline-flex text-sm font-semibold hover:bg-primary/5 hover:text-primary"
+@@ -78,6 +118,90 @@ export function Navbar() {
+                                 </Link>
+                             </Button>
+                         </div>
++                        <button
++                            onClick={() => setOpen((v) => !v)}
++                            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border/60 bg-card text-foreground lg:hidden"
++                            aria-label="Toggle menu"
++                        >
++                            <Menu className="h-5 w-5" />
++                        </button>
++                    </div> */}
++
++                    <div className="flex items-center gap-2">
++
++                        {isLoggedIn ? (
++                            pathname === "/" ? (
++                                <Button
++                                    className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30"
++                                    asChild
++                                >
++                                    <Link href="/login/home">
++                                        <Home className="mr-2 h-4 w-4" />
++                                        Home
++                                    </Link>
++                                </Button>
++                            ) : (
++                                <div className="relative email-dropdown-container">
++                                    <button
++                                        onClick={() => setDropdownOpen(!dropdownOpen)}
++                                        className="flex items-center gap-2.5 px-4 py-2 rounded-full border border-slate-200 bg-white/60 backdrop-blur-md text-slate-700 font-semibold text-sm transition hover:bg-white/90 shadow-sm cursor-pointer select-none"
++                                    >
++                                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200">
++                                            <User size={16} className="text-slate-500 fill-slate-500" />
++                                        </div>
++                                        <span className="font-semibold text-slate-700 tracking-wide max-w-[200px] truncate">
++                                            {email || "merchant@gmail.com"}
++                                        </span>
++                                        <ChevronDown size={16} className={cn("text-slate-500 transition-transform duration-200", dropdownOpen && "rotate-180")} />
++                                    </button>
++
++                                    {dropdownOpen && (
++                                        <div className="absolute right-0 mt-2 w-64 bg-white rounded-3xl shadow-xl border border-slate-100 py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
++                                            <Link
++                                                href="/login/changeEmail"
++                                                onClick={() => setDropdownOpen(false)}
++                                                className="flex items-center gap-3.5 px-5 py-3 text-[15px] font-medium text-slate-700 hover:bg-slate-50 transition-colors first:rounded-t-3xl"
++                                            >
++                                                <UserCog size={18} className="text-slate-600" />
++                                                Profile Setting
++                                            </Link>
++                                            <Link
++                                                href="/login/AccountSetting"
++                                                onClick={() => setDropdownOpen(false)}
++                                                className="flex items-center gap-3.5 px-5 py-3 text-[15px] font-medium text-slate-700 hover:bg-slate-50 transition-colors last:rounded-b-3xl"
++                                            >
++                                                <Mail size={18} className="text-slate-600" />
++                                                Account Setting
++                                            </Link>
++                                        </div>
++                                    )}
++                                </div>
++                            )
++                        ) : (
++                            <>
++                                <Button
++                                    variant="ghost"
++                                    className="hidden sm:inline-flex text-sm font-semibold hover:bg-primary/5 hover:text-primary"
++                                    asChild
++                                >
++                                    <Link href="/login">Log in</Link>
++                                </Button>
++
++                                <div className="relative hidden sm:block">
++                                    <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-primary via-fuchsia-500 to-primary opacity-70 blur-sm animate-gradient bg-[length:200%_auto]" />
++                                    <Button
++                                        className="relative bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30"
++                                        asChild
++                                    >
++                                        <Link href="/signup">
++                                            Get Started
++                                            <ArrowRight className="ml-1.5 h-4 w-4" />
++                                        </Link>
++                                    </Button>
++                                </div>
++                            </>
++                        )}
++
+                         <button
+                             onClick={() => setOpen((v) => !v)}
+                             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border/60 bg-card text-foreground lg:hidden"
+@@ -86,6 +210,7 @@ export function Navbar() {
+                             <Menu className="h-5 w-5" />
+                         </button>
+                     </div>
++
+                 </nav>
+ 
+                 {open && (
+@@ -110,14 +235,46 @@ export function Navbar() {
+                                     </li>
+                                 );
+                             })}
+-                            <li className="mt-2 flex gap-2">
+-                                <Button variant="outline" className="flex-1" asChild>
+-                                    <Link href="/login" onClick={() => setOpen(false)}>Log in</Link>
+-                                </Button>
+-                                <Button className="flex-1 bg-primary" asChild>
+-                                    <Link href="/signup" onClick={() => setOpen(false)}>Get Started</Link>
+-                                </Button>
+-                            </li>
++                            {isLoggedIn ? (
++                                <>
++                                    <li>
++                                        <Link
++                                            href="/login/home"
++                                            onClick={() => setOpen(false)}
++                                            className="block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary text-foreground/80"
++                                        >
++                                            Home
++                                        </Link>
++                                    </li>
++                                    <li>
++                                        <Link
++                                            href="/login/changeEmail"
++                                            onClick={() => setOpen(false)}
++                                            className="block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary text-foreground/80"
++                                        >
++                                            Profile Setting
++                                        </Link>
++                                    </li>
++                                    <li>
++                                        <Link
++                                            href="/login/AccountSetting"
++                                            onClick={() => setOpen(false)}
++                                            className="block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary text-foreground/80"
++                                        >
++                                            Account Setting
++                                        </Link>
++                                    </li>
++                                </>
++                            ) : (
++                                <li className="mt-2 flex gap-2">
++                                    <Button variant="outline" className="flex-1" asChild>
++                                        <Link href="/login" onClick={() => setOpen(false)}>Log in</Link>
++                                    </Button>
++                                    <Button className="flex-1 bg-primary" asChild>
++                                        <Link href="/signup" onClick={() => setOpen(false)}>Get Started</Link>
++                                    </Button>
++                                </li>
++                            )}
+                         </ul>
+                     </div>
+                 )}
