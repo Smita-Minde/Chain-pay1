@@ -215,15 +215,14 @@ export default function TransactionView() {
                                         <td className="p-4 font-bold text-slate-700">{tx.token}</td>
                                         <td className="p-4 text-slate-500">{tx.createdAt}</td>
                                         <td className="p-4">
-                                            <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                tx.status === "Paid"
-                                                    ? "bg-green-100 text-green-600"
-                                                    : tx.status === "Partial"
-                                                        ? "bg-amber-100 text-amber-600"
-                                                        : tx.status === "Pending"
-                                                            ? "bg-blue-100 text-blue-600"
-                                                            : "bg-red-100 text-red-600"
-                                            }`}>
+                                            <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tx.status === "Paid"
+                                                ? "bg-green-100 text-green-600"
+                                                : tx.status === "Partial"
+                                                    ? "bg-amber-100 text-amber-600"
+                                                    : tx.status === "Pending"
+                                                        ? "bg-blue-100 text-blue-600"
+                                                        : "bg-red-100 text-red-600"
+                                                }`}>
                                                 {tx.status}
                                             </span>
                                         </td>

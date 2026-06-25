@@ -11,24 +11,26 @@ import {
 import Link from "next/link";
 
 const networks = {
-  tron: {
-    name: "TRON",
-    color: "from-red-500 to-pink-500",
+
+  mst: {
+    name: "MST Blockchain",
+    color: "from-blue-500 to-indigo-600",
     assets: [
       {
-        asset: "TRX (TRC20)",
-        ticker: "tron",
-        min: "10 TRX",
+        asset: "USDC (MEP20)",
+        ticker: "mst/usdc",
+        min: "1 USDC",
         fee: "N/A",
       },
       {
-        asset: "USDT (TRC20)",
-        ticker: "tron/usdt",
-        min: "10 USDT",
+        asset: "MSTC",
+        ticker: "mstc",
+        min: "10 MSTC",
         fee: "N/A",
       },
     ],
   },
+
 
   bnb: {
     name: "BNB Smart Chain",
@@ -55,24 +57,25 @@ const networks = {
     ],
   },
 
-  mst: {
-    name: "MST Blockchain",
-    color: "from-blue-500 to-indigo-600",
+  tron: {
+    name: "TRON",
+    color: "from-red-500 to-pink-500",
     assets: [
       {
-        asset: "USDC (MEP20)",
-        ticker: "mst/usdc",
-        min: "1 USDC",
+        asset: "TRX (TRC20)",
+        ticker: "tron",
+        min: "10 TRX",
         fee: "N/A",
       },
       {
-        asset: "MSTC",
-        ticker: "mstc",
-        min: "10 MSTC",
+        asset: "USDT (TRC20)",
+        ticker: "tron/usdt",
+        min: "10 USDT",
         fee: "N/A",
       },
     ],
   },
+
 };
 
 

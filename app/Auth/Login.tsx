@@ -78,6 +78,16 @@ const Login: React.FC = () => {
           email: form.email,
           password: form.password,
           type: 'auth',
+          onError: (errMsg: string) => {
+            const lowMsg = errMsg.toLowerCase();
+            if (lowMsg.includes('not exist') || lowMsg.includes('not found') || lowMsg.includes('no user')) {
+              setError((prev) => ({ ...prev, email: 'Email not exists' }));
+            } else if (lowMsg.includes('password') || lowMsg.includes('credentials') || lowMsg.includes('credential')) {
+              setError((prev) => ({ ...prev, password: errMsg }));
+            } else {
+              setError((prev) => ({ ...prev, email: errMsg }));
+            }
+          }
         };
 
         const response = await authOtp(payload);

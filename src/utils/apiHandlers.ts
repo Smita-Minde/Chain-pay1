@@ -68,3 +68,22 @@ export function setAuthCookie(token: string) {
     localStorage.setItem('auth_token', token);
   }
 }
+
+export async function getReq(url: string): Promise<any> {
+  try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const response = await fetch(`${BASE_URL}${url}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+    });
+    const result = await response.json();
+    return result;
+  } catch (error: any) {
+    showErrorMessage(error.message || 'Something went wrong');
+    return { status: false, error };
+  }
+}
+

@@ -22,9 +22,20 @@ import { useAuth } from "@hooks";
 import DeleteAccount from "@components/Modals/DeleteAccount";
 
 export default function ChangeEmailPage() {
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+    const router = useRouter();
+
+    useEffect(() => {
+        const token = localStorage.getItem("auth_token") || localStorage.getItem("token") || localStorage.getItem("loginSuccessRoyalGame");
+        if (!token) {
+            router.replace("/login");
+        } else {
+            setIsCheckingAuth(false);
+        }
+    }, [router]);
+
     const [email, setEmail] = useState("smita@gmail.com");
     const [newEmail, setNewEmail] = useState("smita@gmail.com");
-    const router = useRouter();
 
     const { logout, changePassword } = useAuth();
 
@@ -165,6 +176,10 @@ export default function ChangeEmailPage() {
             setConfirmPassword("");
         }
     };
+
+    if (isCheckingAuth) {
+        return null;
+    }
 
     return (
         <div className="relative w-full min-h-[calc(100vh-80px)] md:h-[calc(100vh-80px)] overflow-x-hidden md:overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 flex flex-col md:flex-row">

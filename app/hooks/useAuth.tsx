@@ -43,6 +43,7 @@ export interface AuthOtpData {
   email?: string;
   password?: string;
   type?: string;
+  onError?: (err: string) => void;
   [key: string]: any;
 }
 
@@ -219,7 +220,11 @@ export const useAuth = (): UseAuthReturn => {
     if (isSuccess) {
       return response.data || response;
     } else {
-      showErrorMessage(response?.message || response?.error?.message || 'Failed to send verification code');
+      const errorMsg = response?.message || response?.error?.message || 'Failed to send verification code';
+      showErrorMessage(errorMsg);
+      if (data?.onError) {
+        data.onError(errorMsg);
+      }
       return false;
     }
   }, []);
