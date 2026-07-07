@@ -1,5 +1,5 @@
-import IndustrySection from "@/InnerPages/industries/industries";
+import Industries from "@/InnerPages/industries/industries";
 
 export default function Page() {
-  return <IndustrySection />;
+  return <Industries />;
 }

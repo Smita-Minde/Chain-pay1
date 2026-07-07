@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PinInput from 'react-pin-input';
+import { OTPInput } from 'input-otp';
 import moment from 'moment';
 import { useAuth } from '@hooks';
 import { renderError } from '@utils/validation';
@@ -98,8 +98,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
           const seconds = totalSeconds % 60;
 
           setResendTimer(
-            `${minutes < 10 ? `0${minutes}` : minutes}:${
-              seconds < 10 ? `0${seconds}` : seconds
+            `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds
             }`,
           );
         } else {
@@ -258,7 +257,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
                 </span>
               </div>
 
-              <div className="flex justify-center gap-2  col-span-2 py-4">
+              {/* <div className="flex justify-center gap-2  col-span-2 py-4">
                 <PinInput
                   length={6}
                   initialValue=""
@@ -276,6 +275,45 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
                     color: 'white',
                   }}
                 />
+                {renderError(error.code)}
+              </div> */}
+
+              <div className="flex flex-col items-center col-span-2 py-4">
+                <OTPInput
+                  maxLength={6}
+                  value={form.code}
+                  onChange={(value) => {
+                    handleChange({
+                      target: {
+                        name: "code",
+                        value,
+                      },
+                    });
+                  }}
+                  onComplete={(value) => {
+                    handleChange({
+                      target: {
+                        name: "code",
+                        value,
+                      },
+                    });
+                  }}
+                  containerClassName="flex gap-2 justify-center"
+                  render={({ slots }) => (
+                    <>
+                      {slots.map((slot, index) => (
+                        <div
+                          key={index}
+                          className={`w-12 h-12 rounded-md border flex items-center justify-center text-white text-lg font-medium ${slot.isActive ? "border-white ring-2 ring-white" : "border-white"
+                            }`}
+                        >
+                          {slot.char ?? ""}
+                        </div>
+                      ))}
+                    </>
+                  )}
+                />
+
                 {renderError(error.code)}
               </div>
               <div className="col-span-2">

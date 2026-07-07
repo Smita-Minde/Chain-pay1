@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, ArrowRight, Home, User, ChevronDown, UserCog, Mail } from "lucide-react";
+import { Menu, ArrowRight, Home, User, ChevronDown, UserCog, Mail, LayoutGrid } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -12,10 +12,17 @@ import { useEffect } from "react";
 const links = [
     { to: "/industries", label: "Industries" },
     { to: "/cryptocurrencies", label: "Cryptocurrencies" },
+    { to: "/developer-docs", label: "Developer Docs" },
     { to: "/about", label: "About" },
-    { to: "/integration-docs", label: "Integration Doc" },
-    { to: "/api-reference", label: "Api Reference" },
 ] as const;
+
+const dropdownIndustries = [
+    { name: "E-Commerce & Retail", path: "/industries/E-commerce&Retail" },
+    { name: "Travel & Hospitality", path: "/industries/travel-hospitality" },
+    { name: "Gaming & Entertainment", path: "/industries/gaming-entertainment" },
+    { name: "Freelancers & Digital Services", path: "/industries/freelancer-digital-services" },
+    { name: "Startups & Enterprises", path: "/industries/startups-enterprises" },
+];
 
 export function Navbar() {
 
@@ -24,6 +31,12 @@ export function Navbar() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const pathname = usePathname();
+
+    const [open, setOpen] = useState(false);
+    const [docsDropdownOpen, setDocsDropdownOpen] = useState(false);
+    const [industriesDropdownOpen, setIndustriesDropdownOpen] = useState(false);
+    const [mobileDocsOpen, setMobileDocsOpen] = useState(false);
+    const [mobileIndustriesOpen, setMobileIndustriesOpen] = useState(false);
 
     useEffect(() => {
         const checkAuth = () => {
@@ -67,6 +80,8 @@ export function Navbar() {
         };
 
         checkAuth();
+        setDocsDropdownOpen(false);
+        setIndustriesDropdownOpen(false);
 
         window.addEventListener("storage", checkAuth);
         return () => {
@@ -94,7 +109,29 @@ export function Navbar() {
         return `${username.slice(0, 3)}...${username.slice(-2)}@${domain}`;
     };
 
-    const [open, setOpen] = useState(false);
+    useEffect(() => {
+        if (!docsDropdownOpen) return;
+        const handleOutsideClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest(".docs-dropdown-container")) {
+                setDocsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleOutsideClick);
+        return () => document.removeEventListener("mousedown", handleOutsideClick);
+    }, [docsDropdownOpen]);
+
+    useEffect(() => {
+        if (!industriesDropdownOpen) return;
+        const handleOutsideClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest(".industries-dropdown-container")) {
+                setIndustriesDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleOutsideClick);
+        return () => document.removeEventListener("mousedown", handleOutsideClick);
+    }, [industriesDropdownOpen]);
 
     return (
         <header className="sticky top-0 z-50 w-full">
@@ -116,6 +153,91 @@ export function Navbar() {
                     <ul className="hidden items-center gap-1 lg:flex">
                         {links.map((l) => {
                             const isActive = pathname === l.to;
+                            if (l.to === "/industries") {
+                                const isActiveDropdown = pathname === "/industries" || pathname.startsWith("/industries/");
+                                return (
+                                    <li key={l.to} className="relative industries-dropdown-container">
+                                        <button
+                                            onClick={() => setIndustriesDropdownOpen(!industriesDropdownOpen)}
+                                            className={cn(
+                                                "group relative inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors hover:text-foreground cursor-pointer select-none",
+                                                isActiveDropdown
+                                                    ? "text-primary font-semibold"
+                                                    : "text-foreground/75"
+                                            )}
+                                        >
+                                            <span className="absolute inset-0 -z-10 rounded-full bg-primary/0 transition-colors group-hover:bg-primary/10" />
+                                            {l.label}
+                                            <ChevronDown size={14} className={cn("opacity-70 transition-transform duration-200", industriesDropdownOpen && "rotate-180")} />
+                                        </button>
+
+                                        {/* Dropdown Menu */}
+                                        <div className={cn(
+                                            "absolute left-1/2 -translate-x-1/2 mt-1 w-64 rounded-2xl bg-white border border-slate-100 p-3 shadow-xl transition-all duration-200 z-50 text-left",
+                                            industriesDropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
+                                        )}>
+                                            <div className="space-y-1">
+                                                {dropdownIndustries.map((ind) => (
+                                                    <Link
+                                                        key={ind.name}
+                                                        href={ind.path}
+                                                        onClick={() => setIndustriesDropdownOpen(false)}
+                                                        className={cn(
+                                                            "block px-3 py-2 rounded-xl text-left text-sm font-semibold text-slate-800 hover:bg-slate-50 hover:text-slate-900 transition-colors",
+                                                            pathname === ind.path ? "text-primary bg-slate-50/50" : ""
+                                                        )}
+                                                    >
+                                                        {ind.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </li>
+                                );
+                            }
+                            if (l.to === "/developer-docs") {
+                                const isActiveDropdown = pathname === "/integration-docs" || pathname === "/api-reference";
+                                return (
+                                    <li key={l.to} className="relative docs-dropdown-container">
+                                        <button
+                                            onClick={() => setDocsDropdownOpen(!docsDropdownOpen)}
+                                            className={cn(
+                                                "group relative inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors hover:text-foreground cursor-pointer select-none",
+                                                isActiveDropdown
+                                                    ? "text-primary font-semibold"
+                                                    : "text-foreground/75"
+                                            )}
+                                        >
+                                            <span className="absolute inset-0 -z-10 rounded-full bg-primary/0 transition-colors group-hover:bg-primary/10" />
+                                            {l.label}
+                                            <ChevronDown size={14} className={cn("opacity-70 transition-transform duration-200", docsDropdownOpen && "rotate-180")} />
+                                        </button>
+
+                                        {/* Dropdown Menu */}
+                                        <div className={cn(
+                                            "absolute left-1/2 -translate-x-1/2 mt-1 w-56 rounded-2xl bg-white border border-slate-100 p-3 shadow-xl transition-all duration-200 z-50 text-left",
+                                            docsDropdownOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-1"
+                                        )}>
+                                            <div className="space-y-1">
+                                                <Link
+                                                    href="/integration-docs"
+                                                    onClick={() => setDocsDropdownOpen(false)}
+                                                    className="block px-3 py-2 rounded-xl text-left text-sm font-semibold text-slate-800 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                                                >
+                                                    Integration Docs
+                                                </Link>
+                                                <Link
+                                                    href="/api-reference"
+                                                    onClick={() => setDocsDropdownOpen(false)}
+                                                    className="block px-3 py-2 rounded-xl text-left text-sm font-semibold text-slate-800 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                                                >
+                                                    API Reference
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </li>
+                                );
+                            }
                             return (
                                 <li key={l.to}>
                                     <Link
@@ -251,6 +373,90 @@ export function Navbar() {
                     <div className="border-t border-border/60 bg-background/95 backdrop-blur lg:hidden">
                         <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-4">
                             {links.map((l) => {
+                                if (l.to === "/industries") {
+                                    const isActiveDropdown = pathname === "/industries" || pathname.startsWith("/industries/");
+                                    return (
+                                        <li key={l.to} className="flex flex-col">
+                                            <button
+                                                onClick={() => setMobileIndustriesOpen(!mobileIndustriesOpen)}
+                                                className={cn(
+                                                    "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary text-left cursor-pointer",
+                                                    isActiveDropdown
+                                                        ? "bg-primary/10 text-primary font-semibold"
+                                                        : "text-foreground/80"
+                                                )}
+                                            >
+                                                {l.label}
+                                                <ChevronDown size={14} className={cn("transition-transform duration-200", mobileIndustriesOpen && "rotate-180")} />
+                                            </button>
+                                            {mobileIndustriesOpen && (
+                                                <ul className="pl-4 mt-1 space-y-1">
+                                                    {dropdownIndustries.map((ind) => (
+                                                        <li key={ind.name}>
+                                                            <Link
+                                                                href={ind.path}
+                                                                onClick={() => setOpen(false)}
+                                                                className={cn(
+                                                                    "block rounded-lg px-3 py-2 text-xs font-medium transition-colors hover:bg-primary/5 hover:text-primary",
+                                                                    pathname === ind.path ? "text-primary font-semibold" : "text-foreground/70"
+                                                                )}
+                                                            >
+                                                                {ind.name}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </li>
+                                    );
+                                }
+                                if (l.to === "/developer-docs") {
+                                    const isActiveDropdown = pathname === "/integration-docs" || pathname === "/api-reference";
+                                    return (
+                                        <li key={l.to} className="flex flex-col">
+                                            <button
+                                                onClick={() => setMobileDocsOpen(!mobileDocsOpen)}
+                                                className={cn(
+                                                    "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-primary/10 hover:text-primary text-left cursor-pointer",
+                                                    isActiveDropdown
+                                                        ? "bg-primary/10 text-primary font-semibold"
+                                                        : "text-foreground/80"
+                                                )}
+                                            >
+                                                {l.label}
+                                                <ChevronDown size={14} className={cn("transition-transform duration-200", mobileDocsOpen && "rotate-180")} />
+                                            </button>
+                                            {mobileDocsOpen && (
+                                                <ul className="pl-4 mt-1 space-y-1">
+                                                    <li>
+                                                        <Link
+                                                            href="/integration-docs"
+                                                            onClick={() => setOpen(false)}
+                                                            className={cn(
+                                                                "block rounded-lg px-3 py-2 text-xs font-medium transition-colors hover:bg-primary/5 hover:text-primary",
+                                                                pathname === "/integration-docs" ? "text-primary font-semibold" : "text-foreground/70"
+                                                            )}
+                                                        >
+                                                            Integration Docs
+                                                        </Link>
+                                                    </li>
+                                                    <li>
+                                                        <Link
+                                                            href="/api-reference"
+                                                            onClick={() => setOpen(false)}
+                                                            className={cn(
+                                                                "block rounded-lg px-3 py-2 text-xs font-medium transition-colors hover:bg-primary/5 hover:text-primary",
+                                                                pathname === "/api-reference" ? "text-primary font-semibold" : "text-foreground/70"
+                                                            )}
+                                                        >
+                                                            API Reference
+                                                        </Link>
+                                                    </li>
+                                                </ul>
+                                            )}
+                                        </li>
+                                    );
+                                }
                                 const isActive = pathname === l.to;
                                 return (
                                     <li key={l.to}>

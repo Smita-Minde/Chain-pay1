@@ -311,67 +311,8 @@ export default function IntegrationGuidePage() {
         <div className="absolute right-0 top-40 w-[400px] h-[400px] bg-indigo-300/20 blur-[120px] rounded-full" />
       </div>
 
-      {/* HERO */}
-      <section className="max-w-7xl mx-auto px-6 pt-8 pb-10 lg:pt-10 lg:pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="flex flex-col items-start text-left">
-            <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-medium shadow-sm">
-              Developer Documentation
-            </span>
-
-            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 tracking-tight">
-              Checkout Payments
-              <span className="block text-blue-600">Integration Guide</span>
-            </h1>
-
-            <p className="mt-6 text-lg sm:text-xl text-slate-600 leading-relaxed">
-              Accept cryptocurrency payments in minutes using ChainPay hosted checkout pages. No blockchain complexity. No custom payment UI required.
-            </p>
-
-            <div className="flex flex-wrap gap-4 mt-8 lg:mt-10">
-              <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl flex items-center gap-2 font-medium shadow-lg hover:shadow-xl transition-all duration-200">
-                Start Integration
-                <ArrowRight size={18} />
-              </Link>
-
-              <Link href="/login" className="bg-white hover:bg-slate-50 px-8 py-4 rounded-xl border border-slate-200 font-medium transition-colors">
-                View API Docs
-              </Link>
-            </div>
-          </div>
-
-          {/* Flow Visualization */}
-          <div className="bg-white rounded-[32px] sm:rounded-[40px] p-6 shadow-xl border border-slate-100/50 w-full">
-            <div className="space-y-3">
-              {[
-                "Merchant Website",
-                "Create Payment Request",
-                "Hosted Checkout",
-                "Payment Success",
-                "Webhook Notification",
-              ].map((item, index) => (
-                <div key={item}>
-                  <div className="bg-slate-50 border border-slate-100 rounded-2xl py-3.5 px-5 font-semibold text-slate-800 text-sm flex items-center justify-between shadow-sm">
-                    <span className="flex items-center gap-3">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 font-bold text-xs">
-                        {index + 1}
-                      </span>
-                      {item}
-                    </span>
-                  </div>
-
-                  {index !== 4 && (
-                    <div className="flex justify-center py-1 text-blue-500 font-bold text-lg animate-pulse">↓</div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* MAIN CONTENT */}
-      <section className="max-w-7xl mx-auto px-6 pt-4 lg:pt-8 pb-24">
+      <section className="max-w-7xl mx-auto px-6 pt-10 lg:pt-14 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-10">
 
           {/* SIDEBAR (Desktop only) */}

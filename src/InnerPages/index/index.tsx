@@ -1,13 +1,14 @@
 "use client";
 import { InteractiveBackground } from "@/components/hero/InteractiveBackground/InteractiveBackground";
 import { Hero } from "@/components/hero/Hero/Hero";
-import { Stats } from "@/components/hero/Stats/Stats";
+import { CTA } from "@/components/hero/CTA/CTA";
+import Industries from "@/InnerPages/industries/industries";
 import { Features } from "@/components/hero/Features/Features";
 
 import { WhyChainPay } from "@/components/hero/WhyChainpay/WhyChainPay";
-import { AdvancedFeatures } from "@/components/hero/Advancefeatures/AdvancedFeatures";
+// import AdvancedFeatures from "@/components/hero/Advancefeatures/AdvancedFeatures";
 import { Testimonials } from "@/components/hero/testimonial/Testimonials";
-import { CTA } from "@/components/hero/CTA/CTA";
+
 
 // ({
 //     head: () => ({
@@ -21,16 +22,17 @@ import { CTA } from "@/components/hero/CTA/CTA";
 
 export default function Index() {
     return (
-        <div className="relative min-h-screen overflow-hidden">
+        <div className="relative min-h-screen overflow-x-clip">
             <InteractiveBackground />
             <main>
                 <Hero />
-                <Stats />
+                <CTA />
+                <Industries />
                 <Features />
                 <WhyChainPay />
-                <AdvancedFeatures />
+                {/* <AdvancedFeatures /> */}
                 <Testimonials />
-                <CTA />
+
             </main>
         </div>
     );

@@ -82,10 +82,10 @@ export default function ApiReferencePage() {
       </div>
 
       {/* Hero */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-6 lg:pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Left Column: Content */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
+      {/* <section className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-6 lg:pb-16"> */}
+      {/* <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"> */}
+      {/* Left Column: Content */}
+      {/* <div className="lg:col-span-7 flex flex-col items-start text-left">
             <div className="inline-flex items-center rounded-full border border-blue-200 bg-white px-5 py-2 text-sm font-medium text-blue-600 shadow-sm">
               ChainPay API Reference
             </div>
@@ -112,10 +112,10 @@ export default function ApiReferencePage() {
                 Get API Key
               </Link>
             </div>
-          </div>
+          </div> */}
 
-          {/* Right Column: Image */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
+      {/* Right Column: Image */}
+      {/* <div className="lg:col-span-5 flex justify-center lg:justify-end w-full">
             <div className="relative w-full max-w-[480px] rounded-3xl overflow-hidden shadow-xl border border-slate-100 bg-white p-2">
               <Image
                 src="/api-image.jpg"
@@ -126,9 +126,9 @@ export default function ApiReferencePage() {
                 priority
               />
             </div>
-          </div>
-        </div>
-      </section>
+          </div> */}
+      {/* </div> */}
+      {/* </section> */}
 
       {/* Main Docs */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pt-4 lg:pt-12 pb-24">

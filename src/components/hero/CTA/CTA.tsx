@@ -1,105 +1,149 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Zap, Globe } from "lucide-react";
+
+const cards = [
+  {
+    title: "Create Your Account and Get Your API Keys",
+    desc: "Sign up, complete KYC in under 10 minutes, and get your crypto payment API keys instantly. No sales calls. No lengthy onboarding.",
+  },
+  {
+    title: "Accept Crypto Payments from Any Customer, Any Coin",
+    desc: "Your customers pay in Bitcoin, Ethereum, USDT, or 50+ supported assets. ChainPay confirms, converts, and auto-settles to your bank all within seconds.",
+  },
+  {
+    title: "Track Transactions and Withdraw to Bank in One Click",
+    desc: "Monitor every transaction in your real-time dashboard. Withdraw fiat at any time with next-business-day bank transfers.",
+  },
+  {
+    title: "Integrate ChainPay's Payment API in a Few Lines of Code",
+    desc: "Add ChainPay's crypto payment API SDK to your codebase. Create payment intents, generate addresses, and receive webhooks — go live in minutes, not days.",
+  },
+];
+
+const codeBlocks: Record<string, string> = {
+  cURL: `curl -X POST https://sandbox-api.chainpay.biz/payments/request \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "value": 10,
+    "description": "Payment description",
+    "redirectUrl": "https://example.com/success?orderId=123",
+    "notifyUrl": "https://api.example.com/orders/123"
+  }''`,
+  Python: `from chainpay import ChainPay
+
+chainpay = ChainPay("YOUR_API_KEY")
+
+chainpay.payments.create(
+    amount=250.00,
+    currency="USDT",
+    order_id="12345",
+    callback_url="https://yourdomain.com/webhook",
+)`,
+  PHP: `$chainpay = new \\ChainPay\\ChainPayClient('YOUR_API_KEY');
+
+$payment = $chainpay->payments->create([
+  'amount' => 250.00,
+  'currency' => 'USDT',
+  'order_id' => '12345',
+  'callback_url' => 'https://yourdomain.com/webhook'
+]);`,
+};
 
 export function CTA() {
+  const [activeTab, setActiveTab] = useState<keyof typeof codeBlocks>("Python");
+
+  const highlightCode = (code: string, lang: string) => {
+    return code.split("\n").map((line, idx) => {
+      let html = line;
+      if (lang === "Python") {
+        html = line
+          .replace(/(".*?")/g, '<span class="text-emerald-600 font-medium">$1</span>')
+          .replace(/\b(from|import)\b/g, '<span class="text-purple-600 font-semibold">$1</span>')
+          .replace(/\b(250\.00)\b/g, '<span class="text-orange-500 font-semibold">$1</span>');
+      } else if (lang === "Node.Js") {
+        html = line
+          .replace(/('.*?')/g, '<span class="text-emerald-600 font-medium">$1</span>')
+          .replace(/\b(const|require|await|new)\b/g, '<span class="text-purple-600 font-semibold">$1</span>')
+          .replace(/\b(250\.00)\b/g, '<span class="text-orange-500 font-semibold">$1</span>');
+      } else if (lang === "cURL") {
+        html = line
+          .replace(/(".*?"|'.*?')/g, '<span class="text-emerald-600 font-medium">$1</span>')
+          .replace(/\b(curl)\b/g, '<span class="text-purple-600 font-semibold">$1</span>')
+          .replace(/\b(250\.00)\b/g, '<span class="text-orange-500 font-semibold">$1</span>');
+      } else if (lang === "PHP") {
+        html = line
+          .replace(/('.*?')/g, '<span class="text-emerald-600 font-medium">$1</span>')
+          .replace(/\b(new)\b/g, '<span class="text-purple-600 font-semibold">$1</span>')
+          .replace(/\b(250\.00)\b/g, '<span class="text-orange-500 font-semibold">$1</span>');
+      }
+      return <div key={idx} dangerouslySetInnerHTML={{ __html: html || "&nbsp;" }} />;
+    });
+  };
+
   return (
-    <section className="relative mx-auto max-w-7xl px-6 py-24">
-      <div className="group relative">
-        {/* Animated outer glow */}
-        <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-r from-primary via-fuchsia-500 to-cyan-400 bg-[length:200%_auto] opacity-70 blur-2xl animate-gradient" />
+    <section className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
+      <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        {/* Left Side */}
+        <div className="lg:col-span-7 space-y-12 sm:space-y-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
+            Accept Crypto Payments in <br className="hidden sm:inline" />
+            Minutes <span className="text-blue-600">No Complex Setup</span>
+          </h2>
 
-        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-10 shadow-2xl shadow-primary/30 md:p-16">
-          {/* Grid overlay */}
-          <div
-            className="absolute inset-0 opacity-[0.15]"
-            style={{
-              backgroundImage:
-                "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
-              backgroundSize: "44px 44px",
-            }}
-          />
-
-          {/* Shimmer sweep */}
-          <div
-            className="absolute inset-0 opacity-40 mix-blend-overlay"
-            style={{
-              background:
-                "linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%)",
-              backgroundSize: "200% 100%",
-              animation: "shimmer 4s linear infinite",
-            }}
-          />
-
-          {/* Floating orbs */}
-          <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full bg-white/20 blur-3xl animate-blob" />
-          <div className="absolute -bottom-32 -right-20 h-96 w-96 rounded-full bg-cyan-300/30 blur-3xl animate-blob [animation-delay:-8s]" />
-
-          {/* Floating coin/badge chips */}
-          <div className="pointer-events-none absolute left-[8%] top-[18%] hidden md:block">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md animate-float">
-              <Zap className="h-7 w-7 text-white" />
-            </div>
-          </div>
-          <div className="pointer-events-none absolute right-[10%] top-[22%] hidden md:block">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md animate-float [animation-delay:-2s]">
-              <Shield className="h-7 w-7 text-white" />
-            </div>
-          </div>
-          <div className="pointer-events-none absolute bottom-[18%] left-[14%] hidden md:block">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md animate-float [animation-delay:-4s]">
-              <Globe className="h-7 w-7 text-white" />
-            </div>
-          </div>
-
-          {/* Pulse rings */}
-          <div className="pointer-events-none absolute right-[18%] bottom-[14%] hidden md:block">
-            <span className="relative flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-white animate-pulse-ring" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-white" />
-            </span>
-          </div>
-
-          {/* Content */}
-          <div className="relative text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white backdrop-blur">
-              Ready in Minutes
-            </div>
-            <h2 className="mx-auto mt-5 max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
-              Get Started with ChainPay Today —{" "}
-              <span className="bg-gradient-to-r from-white via-cyan-100 to-white bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient">
-                Simple, Secure, and Swift
-              </span>
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-white/90">
-              Join hundreds of businesses already accepting crypto payments effortlessly.
-            </p>
-            <p className="mx-auto mt-2 max-w-2xl text-white/75">
-              Set up your ChainPay gateway in minutes and start transforming your payment experience immediately.
-            </p>
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="group/btn gap-2 rounded-full px-7 shadow-xl transition-transform hover:scale-105"
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+            {cards.map((c, i) => (
+              <div
+                key={i}
+                className="group relative bg-white border border-slate-200/60 rounded-3xl p-5 sm:p-6 shadow-sm transition-all duration-300 hover:bg-blue-50/70 hover:border-blue-200/60 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-pointer"
               >
-                Start Transacting Today
-                <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full border-white/40 bg-white/10 px-7 text-white backdrop-blur hover:bg-white/20 hover:text-white"
-              >
-                Talk to Sales
-              </Button>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 leading-snug transition-colors duration-200">
+                    {c.title}
+                  </h3>
+                  <div className="w-full border-t border-slate-100 group-hover:border-blue-200/50 my-3 sm:my-4 transition-colors duration-200" />
+                  <p className="text-slate-500 group-hover:text-slate-600 text-xs sm:text-sm leading-relaxed transition-colors duration-200">
+                    {c.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Side */}
+        <div className="lg:col-span-5">
+          <div className="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col justify-between min-h-[350px]">
+            <div>
+              {/* Tab Selector */}
+              <div className="flex items-center gap-2 sm:gap-4 pb-4 border-b border-slate-100 mb-6">
+                {(Object.keys(codeBlocks) as Array<keyof typeof codeBlocks>).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3 py-1.5 text-sm font-semibold rounded-full transition-all duration-200 cursor-pointer ${activeTab === tab
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-slate-500 hover:text-slate-800"
+                      }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Code Block */}
+              <div className="font-mono text-[12px] sm:text-xs md:text-sm leading-relaxed text-slate-800 overflow-x-auto min-h-[190px] whitespace-pre p-2">
+                {highlightCode(codeBlocks[activeTab], activeTab)}
+              </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs uppercase tracking-[0.18em] text-white/70">
-              <span>No setup fees</span>
-              <span className="h-1 w-1 rounded-full bg-white/40" />
-              <span>Cancel anytime</span>
-              <span className="h-1 w-1 rounded-full bg-white/40" />
-              <span>24/7 support</span>
+            {/* Run in Sandbox Button */}
+            <div className="mt-6 flex justify-start">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl py-2 px-5 text-sm shadow-md shadow-blue-600/10 cursor-pointer transition-all duration-200 hover:scale-105">
+                Run in Sandbox
+              </Button>
             </div>
           </div>
         </div>
