@@ -6,11 +6,13 @@ import {
     Receipt,
     Send,
     Settings,
-    LogOut
+    LogOut,
+    ArrowLeft
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@hooks";
+import Link from "next/link";
 
 interface DashboardLayoutProps {
     activeView: 'home' | 'transaction' | 'payout' | 'settings';
@@ -140,6 +142,16 @@ export default function DashboardLayout({ activeView, children }: DashboardLayou
 
             {/* Right Content Panel */}
             <div className="flex-1 p-6 md:p-10 relative z-10 md:h-full overflow-y-auto">
+                {/* Mobile Back Button */}
+                <div className="md:hidden mb-6">
+                    <Link
+                        href="/"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all active:scale-[0.98] shadow-sm"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back
+                    </Link>
+                </div>
                 {children}
             </div>
         </div>

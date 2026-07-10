@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Coins, ArrowUpRight, Activity, ShieldCheck, Mail } from "lucide-react";
+import { LayoutDashboard, Coins, ArrowUpRight, Activity, ShieldCheck, Mail, ArrowLeft } from "lucide-react";
 import moment from "moment";
 import { getReq } from "@utils/apiHandlers";
+import Link from "next/link";
 import {
     ResponsiveContainer,
     AreaChart,
@@ -70,32 +71,31 @@ export default function HomeView({ setActiveView }: HomeViewProps) {
 
 
     return (
-        <div className="space-y-8">
-
+        <div className="space-y-6 md:space-y-8">
             {/* TODAY CARD */}
             <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-6">
 
                 {/* TODAY */}
-                <div className="bg-white rounded-3xl p-6 shadow-md">
-                    <h2 className="text-4xl font-bold mb-4">
+                <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-md">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-slate-900">
                         Today Overview
                     </h2>
 
-                    <div className="flex justify-between mb-8">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-8">
                         <div>
-                            <p className="text-slate-500">Volume</p>
-                            <h3 className="text-5xl font-bold">$ 0</h3>
+                            <p className="text-slate-500 text-sm">Volume</p>
+                            <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900">$ 0</h3>
                         </div>
 
-                        <div className="text-right">
-                            <p className="text-slate-500">Yesterday</p>
-                            <h3 className="text-4xl font-bold text-slate-400">
+                        <div className="sm:text-right">
+                            <p className="text-slate-500 text-sm">Yesterday</p>
+                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-400">
                                 $ 0
                             </h3>
                         </div>
                     </div>
 
-                    <div className="h-[400px]">
+                    <div className="h-[250px] sm:h-[300px] md:h-[400px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={todayData}>
                                 <CartesianGrid
@@ -103,8 +103,8 @@ export default function HomeView({ setActiveView }: HomeViewProps) {
                                     stroke="#e5e7eb"
                                 />
 
-                                <XAxis dataKey="time" />
-                                <YAxis />
+                                <XAxis dataKey="time" tick={{ fill: "#64748b", fontSize: 12 }} />
+                                <YAxis tick={{ fill: "#64748b", fontSize: 12 }} />
                                 <Tooltip />
 
                                 <Line
@@ -120,18 +120,19 @@ export default function HomeView({ setActiveView }: HomeViewProps) {
                 </div>
 
                 {/* INFORMATION */}
-                <div className="bg-white rounded-3xl p-2 shadow-md">
-                    <h2 className="text-3xl font-bold mb-8">
+                <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-md">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 text-slate-900">
                         Information
                     </h2>
 
                     <div className="space-y-10">
                         <div>
-                            <p className="text-slate-500">Current Fee : <span className="bg-red-500 text-white px-2 py-2 rounded-lg">
-                                1%
-                            </span>
+                            <p className="text-slate-500 text-sm flex items-center gap-2">
+                                Current Fee:
+                                <span className="bg-red-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold">
+                                    1%
+                                </span>
                             </p>
-
                         </div>
                     </div>
                 </div>
@@ -139,52 +140,52 @@ export default function HomeView({ setActiveView }: HomeViewProps) {
             </div>
 
             {/* DATE FILTER */}
-            <div className="flex justify-end gap-5">
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-4 w-full">
 
-                <div className="flex items-center gap-3">
-                    <span className="text-slate-500">From</span>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <span className="text-slate-500 text-sm w-10 sm:w-auto shrink-0">From</span>
 
                     <input
                         type="date"
                         defaultValue="2026-06-01"
-                        className="bg-white border border-slate-200 rounded-xl px-4 py-3"
+                        className="bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm w-full sm:w-auto"
                     />
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <span className="text-slate-500">To</span>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <span className="text-slate-500 text-sm w-10 sm:w-auto shrink-0">To</span>
 
                     <input
                         type="date"
                         defaultValue="2026-06-17"
-                        className="bg-white border border-slate-200 rounded-xl px-4 py-3"
+                        className="bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm w-full sm:w-auto"
                     />
                 </div>
 
             </div>
 
             {/* DASHBOARD OVERVIEW */}
-            <div className="bg-white rounded-[30px] p-8 shadow-md border border-slate-100">
+            <div className="bg-white rounded-[30px] p-4 sm:p-6 md:p-8 shadow-md border border-slate-100">
 
                 <div className="flex justify-between mb-8">
 
                     <div>
-                        <h2 className="text-4xl font-bold text-slate-900">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900">
                             Dashboard Overview
                         </h2>
 
-                        <p className="text-slate-500 mt-4">
+                        <p className="text-slate-500 mt-3 text-sm">
                             Totals (USD)
                         </p>
 
-                        <h3 className="text-4xl font-bold text-slate-900">
+                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900">
                             $ 0
                         </h3>
                     </div>
 
                 </div>
 
-                <div className="h-[420px]">
+                <div className="h-[250px] sm:h-[300px] md:h-[420px]">
 
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={overviewData}>
@@ -196,11 +197,11 @@ export default function HomeView({ setActiveView }: HomeViewProps) {
 
                             <XAxis
                                 dataKey="date"
-                                tick={{ fill: "#64748b" }}
+                                tick={{ fill: "#64748b", fontSize: 12 }}
                             />
 
                             <YAxis
-                                tick={{ fill: "#64748b" }}
+                                tick={{ fill: "#64748b", fontSize: 12 }}
                             />
 
                             <Tooltip />
