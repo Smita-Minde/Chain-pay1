@@ -45,6 +45,10 @@ const Register: React.FC = () => {
   const [canResend, setCanResend] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  const isPasswordStrong = (pass: string) => {
+    return /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /[0-9]/.test(pass) && /[^A-Za-z0-9]/.test(pass);
+  };
+
   const handleChange = (e: { target: { name: string; value: any } }) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setError((prev) => ({ ...prev, [e.target.name]: '' }));
@@ -56,6 +60,10 @@ const Register: React.FC = () => {
       const [valid, error] = await validateData(registerSchema, form);
       if (error) {
         setError(error);
+        return;
+      }
+      if (!isPasswordStrong(form.password)) {
+        setError((prev) => ({ ...prev, password: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character' }));
         return;
       }
       if (valid) {
@@ -87,6 +95,10 @@ const Register: React.FC = () => {
     try {
       setIsLoading(true);
       setError({});
+      if (!isPasswordStrong(form.password)) {
+        setError((prev) => ({ ...prev, password: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character' }));
+        return;
+      }
       const payload = {
         email: form.email,
         password: form.password,
@@ -96,7 +108,7 @@ const Register: React.FC = () => {
       const [response, error] = await register(payload, '/login/home');
       console.log(error, 'error');
       if (error) {
-        setError(error);
+        setError({ email: error });
         toast.error(error);
         return;
       }

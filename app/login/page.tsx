@@ -43,7 +43,7 @@ export default function LoginPage() {
 
     const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!email) {
             toast.error("Please enter your email address.");
             return;
@@ -61,15 +61,16 @@ export default function LoginPage() {
             return;
         }
 
+        let toastId: any = null;
         try {
-            toast.loading("Sending OTP...", { id: "login-otp" });
+            toastId = toast.loading("Sending OTP...");
             const payload = {
                 email,
                 password,
                 type: 'auth'
             };
             const response = await authOtp(payload);
-            toast.dismiss("login-otp");
+            if (toastId) toast.dismiss(toastId);
             if (response) {
                 let timerData = response;
                 if (response.email && typeof response.email === 'object') {
@@ -85,22 +86,23 @@ export default function LoginPage() {
                 toast.success("OTP sent to your email!");
             }
         } catch (error) {
-            toast.dismiss("login-otp");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error requesting OTP:", error);
             toast.error("Failed to send OTP code. Please try again.");
         }
     };
 
     const handleOtpSubmit = async () => {
+        let toastId: any = null;
         try {
-            toast.loading("Logging in...", { id: "login-action" });
+            toastId = toast.loading("Logging in...");
             const payload = {
                 email,
                 password,
                 verificationCode: otp.join(''),
             };
             const error = await login(payload, '/login/home');
-            toast.dismiss("login-action");
+            if (toastId) toast.dismiss(toastId);
             if (error) {
                 toast.error(typeof error === 'string' ? error : (error.message || "Invalid OTP code"));
             } else {
@@ -108,7 +110,7 @@ export default function LoginPage() {
                 router.push("/login/home");
             }
         } catch (error) {
-            toast.dismiss("login-action");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error logging in:", error);
             toast.error("An error occurred during login.");
         }
@@ -120,10 +122,11 @@ export default function LoginPage() {
             toast.error("Please enter your email address.");
             return;
         }
+        let toastId: any = null;
         try {
-            toast.loading("Sending code...", { id: "forgot-pwd" });
+            toastId = toast.loading("Sending code...");
             const [res, sendError] = await sendForgotPassword({ email: forgotEmail });
-            toast.dismiss("forgot-pwd");
+            if (toastId) toast.dismiss(toastId);
             if (sendError) {
                 toast.error(typeof sendError === 'string' ? sendError : (sendError.message || "Failed to send reset code"));
             } else if (res) {
@@ -132,34 +135,43 @@ export default function LoginPage() {
                 toast.success("Verification code sent successfully!");
             }
         } catch (error) {
-            toast.dismiss("forgot-pwd");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error sending code:", error);
         }
     };
 
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!resetCode || resetCode.length < 6) {
-            toast.error("Please enter the 6-digit code.");
+        if (!forgotEmail) {
+            toast.error("Please enter your email address.");
             return;
         }
-        if (newPassword.length < 8 || newPassword.length > 12) {
-            toast.error("Password must be between 8 and 12 characters.");
+        if (!resetCode) {
+            toast.error("Please enter the verification code.");
+            return;
+        }
+        if (!newPassword) {
+            toast.error("Please enter your new password.");
+            return;
+        }
+        if (newPassword.length < 8) {
+            toast.error("Password must be at least 8 characters.");
             return;
         }
         if (newPassword !== confirmNewPassword) {
             toast.error("Passwords do not match.");
             return;
         }
+        let toastId: any = null;
         try {
-            toast.loading("Resetting password...", { id: "reset-pwd" });
+            toastId = toast.loading("Resetting password...");
             const [response, error] = await apiResetPassword({
                 email: forgotEmail,
                 code: resetCode,
                 newPassword,
                 confirmPassword: confirmNewPassword,
             });
-            toast.dismiss("reset-pwd");
+            if (toastId) toast.dismiss(toastId);
             if (error) {
                 toast.error(typeof error === 'string' ? error : (error.message || "Failed to reset password"));
             } else if (response) {
@@ -173,7 +185,7 @@ export default function LoginPage() {
                 setConfirmNewPassword("");
             }
         } catch (error) {
-            toast.dismiss("reset-pwd");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error resetting password:", error);
         }
     };
@@ -213,8 +225,7 @@ export default function LoginPage() {
                     const minutes = Math.floor(totalSeconds / 60);
                     const seconds = totalSeconds % 60;
                     setResendTimer(
-                        `${minutes < 10 ? `0${minutes}` : minutes}:${
-                            seconds < 10 ? `0${seconds}` : seconds
+                        `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds
                         }`,
                     );
                 } else {
@@ -766,3 +777,4 @@ export default function LoginPage() {
         </div>
     );
 }
+

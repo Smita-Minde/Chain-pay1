@@ -70,7 +70,7 @@ export function Footer() {
       </div>
 
       {/* Newsletter banner */}
-      <div className="mx-auto max-w-7xl px-6 pt-16 border-border/50">
+      {/* <div className="mx-auto max-w-7xl px-6 pt-16 border-border/50">
         <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/10 via-fuchsia-500/10 to-cyan-400/10 p-8 md:p-10">
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/30 blur-3xl" />
           <div className="relative grid items-center gap-6 md:grid-cols-[1.4fr_1fr]">
@@ -97,7 +97,7 @@ export function Footer() {
             </form>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="mx-auto max-w-7xl px-6 py-14">
         <div className="grid gap-12 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
@@ -114,9 +114,9 @@ export function Footer() {
               </div>
               <div className="leading-tight">
 
-                <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                {/* <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                   Fast, Secure, And Borderless
-                </div>
+                </div> */}
               </div>
             </div>
 

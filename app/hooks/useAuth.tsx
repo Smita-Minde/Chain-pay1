@@ -72,23 +72,41 @@ export interface UseAuthReturn {
   resetPassword: (data: ResetPasswordData) => Promise<any[]>;
 }
 
+const getErrorMessage = (response: any): string => {
+  if (!response) return 'Operation failed';
+  if (response.error?.message) {
+    return response.error.message;
+  }
+  if (Array.isArray(response.message)) {
+    return response.message.join(', ');
+  }
+  if (typeof response.message === 'string' && response.message) {
+    return response.message;
+  }
+  if (typeof response.error === 'string' && response.error) {
+    return response.error;
+  }
+  return 'Operation failed';
+};
+
 export const useAuth = (): UseAuthReturn => {
   const router = useRouter();
   const navigate = (path: string) => router.push(path);
 
   const logout = useCallback(async (): Promise<boolean | undefined> => {
-    const response = await postReq('/auth/logout');
-    if (response.status) {
-      removeAuthCookie();
-      localStorage.removeItem('loginSuccessRoyalGame');
-      // dispatch(cleanup());
-      removeAuthCookie();
-      navigate('/login');
-      toast.success('Logout Successfully');
-      return true;
-    } else {
-      showErrorMessage(response.error);
+    try {
+      await postReq('/auth/logout');
+    } catch (e) {
+      console.error(e);
     }
+    removeAuthCookie();
+    localStorage.removeItem('token');
+    localStorage.removeItem('loginSuccessRoyalGame');
+    localStorage.removeItem('registered_user');
+    localStorage.removeItem('email');
+    navigate('/login');
+    toast.success('Logout Successfully');
+    return true;
   }, [navigate]);
 
   const navigateAuthenticatedUser = useCallback((): void => {
@@ -116,7 +134,12 @@ export const useAuth = (): UseAuthReturn => {
         if (isSuccess) {
           if (token) {
             setAuthCookie(token);
+            localStorage.setItem('token', token);
             localStorage.setItem('loginSuccessRoyalGame', JSON.stringify(token));
+          }
+          if (data.email) {
+            localStorage.setItem('registered_user', JSON.stringify({ email: data.email }));
+            localStorage.setItem('email', data.email);
           }
           if (redirectPath) {
             window.location.href = redirectPath;
@@ -127,8 +150,9 @@ export const useAuth = (): UseAuthReturn => {
           toast.success('Welcome! You have successfully logged in');
           return null;
         } else {
-          showErrorMessage(response?.error?.message || response?.message || 'Login failed');
-          return response?.error?.message || response?.error || 'Login failed';
+          const errMsg = getErrorMessage(response);
+          showErrorMessage(errMsg);
+          return errMsg;
         }
       }
     },
@@ -141,14 +165,20 @@ export const useAuth = (): UseAuthReturn => {
       console.log(valid, error);
       if (error) return [null, error];
       if (valid) {
-        const response = await postReqWithoutToken('/auth/register', data);
+        const { confirmPassword, ...registerPayload } = data;
+        const response = await postReqWithoutToken('/auth/register', registerPayload);
         const token = response?.data?.accessToken || response?.accessToken || response?.tokens?.access?.token || response?.token;
         const isSuccess = response && response.status !== false && response.status !== 400 && response.status !== 500 && (response.status === true || response.status === 200 || response.status === 201 || !!token || !!response.user);
         
         if (isSuccess) {
           if (token) {
             setAuthCookie(token);
+            localStorage.setItem('token', token);
             localStorage.setItem('loginSuccessRoyalGame', JSON.stringify(token));
+          }
+          if (data.email) {
+            localStorage.setItem('registered_user', JSON.stringify({ email: data.email }));
+            localStorage.setItem('email', data.email);
           }
           if (redirectPath) {
             window.location.href = redirectPath;
@@ -159,8 +189,9 @@ export const useAuth = (): UseAuthReturn => {
           toast.success('Welcome! You have successfully logged in');
           return [response.data || response, null];
         } else {
-          showErrorMessage(response?.error?.message || response?.message || 'Registration failed');
-          return [null, response?.error?.message || response?.error || 'Registration failed'];
+          const errMsg = getErrorMessage(response);
+          showErrorMessage(errMsg);
+          return [null, errMsg];
         }
       }
       return [null, 'Validation failed'];
@@ -174,13 +205,23 @@ export const useAuth = (): UseAuthReturn => {
     });
     if (error) return [null, error];
     if (valid) {
-      const response = await postReq('/auth/forgot-password', {
+      const response = await postReqWithoutToken('/auth/forgot-password', {
         email: data.email,
       });
-      if (response.status) {
-        return [response.data];
+      const isSuccess = response && 
+        response.status !== false && 
+        response.status !== 500 && 
+        response.status !== 400 && 
+        response.statusCode !== 400 && 
+        response.statusCode !== 500 && 
+        (response.email || response.data || response.status === true || response.status === 200 || response.status === 201);
+
+      if (isSuccess) {
+        return [response.data || response];
       } else {
-        showErrorMessage(response.error);
+        const errMsg = getErrorMessage(response);
+        showErrorMessage(errMsg);
+        return [null, errMsg];
       }
     }
     return [null];
@@ -192,14 +233,24 @@ export const useAuth = (): UseAuthReturn => {
     });
     if (error) return [null, error];
     if (valid) {
-      const response = await postReq('/auth/send-code', {
+      const response = await postReqWithoutToken('/auth/send-code', {
         email: data.email,
         type: 'email',
       });
-      if (response.status) {
-        return [response.data];
+      const isSuccess = response && 
+        response.status !== false && 
+        response.status !== 500 && 
+        response.status !== 400 && 
+        response.statusCode !== 400 && 
+        response.statusCode !== 500 && 
+        (response.email || response.data || response.status === true || response.status === 200 || response.status === 201);
+
+      if (isSuccess) {
+        return [response.data || response];
       } else {
-        showErrorMessage(response.error);
+        const errMsg = getErrorMessage(response);
+        showErrorMessage(errMsg);
+        return [null, errMsg];
       }
     }
     return [null];
@@ -220,7 +271,7 @@ export const useAuth = (): UseAuthReturn => {
     if (isSuccess) {
       return response.data || response;
     } else {
-      const errorMsg = response?.message || response?.error?.message || 'Failed to send verification code';
+      const errorMsg = getErrorMessage(response);
       showErrorMessage(errorMsg);
       if (data?.onError) {
         data.onError(errorMsg);
@@ -242,8 +293,9 @@ export const useAuth = (): UseAuthReturn => {
         toast.success('Your Password has changed successfully');
         return { success: true };
       } else {
-        showErrorMessage(response.error);
-        toast.error(response.error.message);
+        const errMsg = getErrorMessage(response);
+        showErrorMessage(errMsg);
+        toast.error(errMsg);
       }
     }
     return [null];
@@ -262,12 +314,14 @@ export const useAuth = (): UseAuthReturn => {
         toast.success('Your password has been reset successfully');
         return [response.data, null];
       } else {
-        showErrorMessage(response.error);
-        return [null, response.error];
+        const errMsg = getErrorMessage(response);
+        showErrorMessage(errMsg);
+        return [null, errMsg];
       }
     } catch (err) {
-      showErrorMessage('Something went wrong, please try again');
-      return [null, err];
+      const errMsg = getErrorMessage(err);
+      showErrorMessage(errMsg);
+      return [null, errMsg];
     }
   }, []);
 

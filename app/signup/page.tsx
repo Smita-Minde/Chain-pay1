@@ -46,6 +46,10 @@ export default function SignupPage() {
         }
     };
 
+    const isPasswordStrong = (pass: string) => {
+        return /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /[0-9]/.test(pass) && /[^A-Za-z0-9]/.test(pass);
+    };
+
     const handlePasswordChange = (val: string) => {
         setPassword(val);
         if (submitAttempted) {
@@ -53,6 +57,8 @@ export default function SignupPage() {
                 setPasswordError("Password is required");
             } else if (val.length < 8) {
                 setPasswordError("Password must be at least 8 characters");
+            } else if (!isPasswordStrong(val)) {
+                setPasswordError("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
             } else {
                 setPasswordError("");
             }
@@ -100,6 +106,9 @@ export default function SignupPage() {
         } else if (password.length < 8) {
             setPasswordError("Password must be at least 8 characters");
             hasError = true;
+        } else if (!isPasswordStrong(password)) {
+            setPasswordError("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+            hasError = true;
         } else {
             setPasswordError("");
         }
@@ -116,14 +125,15 @@ export default function SignupPage() {
 
         if (hasError) return;
 
+        let toastId: any = null;
         try {
-            toast.loading("Sending code...", { id: "register-otp" });
+            toastId = toast.loading("Sending code...");
             const payload = {
                 email,
                 type: 'register',
             };
             const response = await authOtp(payload);
-            toast.dismiss("register-otp");
+            if (toastId) toast.dismiss(toastId);
             if (response) {
                 let timerData = response;
                 if (response.email && typeof response.email === 'object') {
@@ -139,15 +149,16 @@ export default function SignupPage() {
                 toast.success("Verification code sent to your email!");
             }
         } catch (error) {
-            toast.dismiss("register-otp");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error in registration OTP request:", error);
             toast.error("Failed to request verification code.");
         }
     };
 
     const handleRegisterSubmit = async () => {
+        let toastId: any = null;
         try {
-            toast.loading("Creating account...", { id: "register-action" });
+            toastId = toast.loading("Creating account...");
             const payload = {
                 email,
                 password,
@@ -155,7 +166,7 @@ export default function SignupPage() {
                 emailVerificationCode: otp.join(''),
             };
             const [response, error] = await register(payload, '/login/home');
-            toast.dismiss("register-action");
+            if (toastId) toast.dismiss(toastId);
             if (error) {
                 toast.error(typeof error === 'string' ? error : (error.message || "Failed to create account"));
             } else if (response) {
@@ -163,7 +174,7 @@ export default function SignupPage() {
                 router.push("/login/home");
             }
         } catch (error) {
-            toast.dismiss("register-action");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error during register:", error);
             toast.error("An error occurred during registration.");
         }

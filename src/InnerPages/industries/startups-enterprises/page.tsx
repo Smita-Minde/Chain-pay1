@@ -332,7 +332,7 @@ export default function StartupsEnterprises() {
             </div>
 
             {/* ================= 1. HERO SECTION (Asymmetric Centered Immersive Hero Layout) ================= */}
-            <section className="relative pt-32 pb-24 md:pt-40 md:pb-36 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+            <section className="relative pt-10 pb-16 md:pt-12 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
                 <div className="max-w-4xl mx-auto space-y-8">
 
                     {/* Badge */}

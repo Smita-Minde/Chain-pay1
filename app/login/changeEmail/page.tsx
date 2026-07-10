@@ -103,8 +103,9 @@ export default function ChangeEmailPage() {
             return;
         }
 
+        let toastId: any = null;
         try {
-            toast.loading("Updating email...", { id: "change-email" });
+            toastId = toast.loading("Updating email...");
 
             const storedUser = localStorage.getItem("registered_user");
             if (storedUser) {
@@ -112,9 +113,13 @@ export default function ChangeEmailPage() {
                     const parsed = JSON.parse(storedUser);
                     parsed.email = newEmail;
                     localStorage.setItem("registered_user", JSON.stringify(parsed));
+                    localStorage.setItem("email", newEmail);
                 } catch (err) {
                     console.error(err);
                 }
+            } else {
+                localStorage.setItem("registered_user", JSON.stringify({ email: newEmail }));
+                localStorage.setItem("email", newEmail);
             }
 
             const token = localStorage.getItem("token");
@@ -129,7 +134,7 @@ export default function ChangeEmailPage() {
                 body: JSON.stringify({ email: newEmail })
             }).catch(() => null);
 
-            toast.dismiss("change-email");
+            if (toastId) toast.dismiss(toastId);
             toast.success("Email updated successfully!");
             setEmail(newEmail);
 
@@ -137,7 +142,7 @@ export default function ChangeEmailPage() {
                 window.dispatchEvent(new Event("storage"));
             }
         } catch (error) {
-            toast.dismiss("change-email");
+            if (toastId) toast.dismiss(toastId);
             console.error(error);
             toast.error("Failed to update email.");
         }
@@ -149,8 +154,8 @@ export default function ChangeEmailPage() {
             toast.error("All password fields are required.");
             return;
         }
-        if (newPassword.length < 8 || newPassword.length > 12) {
-            toast.error("New password must be between 8 and 12 characters.");
+        if (newPassword.length < 8) {
+            toast.error("New password must be at least 8 characters.");
             return;
         }
         if (newPassword !== confirmPassword) {
@@ -158,17 +163,18 @@ export default function ChangeEmailPage() {
             return;
         }
 
+        let toastId: any = null;
         try {
-            toast.loading("Updating password...", { id: "change-pwd" });
+            toastId = toast.loading("Updating password...");
             const response = await changePassword({ oldPassword, newPassword });
-            toast.dismiss("change-pwd");
+            if (toastId) toast.dismiss(toastId);
 
             toast.success("Your password has been updated successfully");
             setOldPassword("");
             setNewPassword("");
             setConfirmPassword("");
         } catch (error) {
-            toast.dismiss("change-pwd");
+            if (toastId) toast.dismiss(toastId);
             console.error(error);
             toast.success("Your password has been updated successfully");
             setOldPassword("");

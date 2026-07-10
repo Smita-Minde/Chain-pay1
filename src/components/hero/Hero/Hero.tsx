@@ -22,12 +22,32 @@ export function Hero() {
   const tx1Ref = useRef<HTMLDivElement>(null);
   const tx2Ref = useRef<HTMLDivElement>(null);
   const tx3Ref = useRef<HTMLDivElement>(null);
+  const stageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let timeouts: NodeJS.Timeout[] = [];
     let animationFrames: number[] = [];
     let loopTimeout: NodeJS.Timeout | null = null;
     let isActive = true;
+
+    function updateScale() {
+      const el = stageContainerRef.current;
+      if (!el) return;
+      const width = window.innerWidth;
+      let scale = 1;
+      if (width < 1024) {
+        scale = Math.min(0.7, (width - 32) / 1035);
+      } else if (width < 1280) {
+        scale = Math.min(0.65, (width * 0.5 - 48) / 1035);
+      } else if (width < 1536) {
+        scale = 0.55;
+      } else {
+        scale = 0.65;
+      }
+      el.style.setProperty("--scale", String(scale));
+    }
+    updateScale();
+    window.addEventListener("resize", updateScale);
 
     function lerp(a: number, b: number, t: number) {
       return a + (b - a) * t;
@@ -203,6 +223,7 @@ export function Hero() {
       timeouts.forEach(clearTimeout);
       animationFrames.forEach(cancelAnimationFrame);
       if (loopTimeout) clearTimeout(loopTimeout);
+      window.removeEventListener("resize", updateScale);
     };
   }, []);
 
@@ -245,13 +266,16 @@ export function Hero() {
           align-items: center;
           overflow: visible;
           flex-shrink: 0;
-          /* Default scaling for standard desktop */
-          width: 520px;
-          height: 322px;
+          width: 100%;
+          max-width: 100%;
+          height: calc(620px * var(--scale, 0.52));
+          margin: 0 auto;
         }
         @media (min-width: 1024px) {
           .chainpay-hero-container .stage-container {
+            width: calc(1035px * var(--scale, 0.52));
             margin-left: -50px;
+            margin-right: 0;
           }
         }
 
@@ -260,8 +284,8 @@ export function Hero() {
           width: 900px;
           height: 620px;
           flex-shrink: 0;
-          transform: scale(0.52);
-          transform-origin: center;
+          transform: scale(var(--scale, 0.52));
+          transform-origin: center center;
         }
 
         /* concentric rings */
@@ -430,6 +454,22 @@ export function Hero() {
             display: none;
           }
         }
+        @media (max-width: 640px) {
+          .chainpay-hero-container .status-bar {
+            display: grid;
+            grid-template-cols: repeat(2, 1fr);
+            gap: 16px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+          }
+        }
+        @media (max-width: 400px) {
+          .chainpay-hero-container .status-bar {
+            grid-template-cols: 1fr;
+            max-width: 290px;
+          }
+        }
         .chainpay-hero-container .stat-item { display: flex; align-items: center; gap: 9px; }
         .chainpay-hero-container .stat-icon {
           width: 32px; height: 32px; border-radius: 9px;
@@ -504,68 +544,12 @@ export function Hero() {
         .chainpay-hero-container .customer-card:nth-child(2) { animation: float 4.5s ease-in-out infinite; animation-delay: 1.2s; }
         .chainpay-hero-container .customer-card:nth-child(3) { animation: float 4.5s ease-in-out infinite; animation-delay: 2s; }
 
-        /* Scaling calculations */
-        @media (min-width: 1536px) {
-          .chainpay-hero-container .stage-container {
-            width: 650px;
-            height: 403px;
-          }
-          .chainpay-hero-container .stage {
-            transform: scale(0.65);
-            transform-origin: center;
-          }
-        }
-        @media (max-width: 1535px) and (min-width: 1280px) {
-          .chainpay-hero-container .stage-container {
-            width: 520px;
-            height: 322px;
-          }
-          .chainpay-hero-container .stage {
-            transform: scale(0.52);
-            transform-origin: center;
-          }
-        }
-        @media (max-width: 1279px) and (min-width: 1024px) {
-          .chainpay-hero-container .stage-container {
-            width: 460px;
-            height: 285px;
-          }
-          .chainpay-hero-container .stage {
-            transform: scale(0.46);
-            transform-origin: center;
-          }
-        }
-        @media (max-width: 1023px) and (min-width: 768px) {
-          .chainpay-hero-container .stage-container {
-            width: 700px;
-            height: 434px;
-          }
-          .chainpay-hero-container .stage {
-            transform: scale(0.70);
-            transform-origin: center;
-          }
-        }
-        @media (max-width: 767px) and (min-width: 480px) {
-          .chainpay-hero-container .stage-container {
-            width: 460px;
-            height: 285px;
-          }
-          .chainpay-hero-container .stage {
-            transform: scale(0.46);
-            transform-origin: center;
-          }
-        }
-        @media (max-width: 479px) {
-          .chainpay-hero-container .stage {
-            transform: scale(0.38);
-            transform-origin: center;
-          }
-        }
+        /* Scaling calculations handled fluidly */
       ` }} />
 
       <div className="grid items-center gap-12 lg:grid-cols-2 w-full">
         {/* Left Copy Column */}
-        <div className="flex flex-col items-start text-left min-w-0 w-full z-10">
+        <div className="flex flex-col items-center lg:items-start text-center lg:text-left min-w-0 w-full z-10">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary animate-fade-in">
             <Sparkles className="h-3.5 w-3.5" />
             Developer First • Business Ready
@@ -576,22 +560,24 @@ export function Hero() {
           </h1>
 
           <p className="mt-4 sm:mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-muted-foreground">
-            Powerful APIs and tools to help developers integrate crypto <br></br>payments in minutes.
+            Powerful APIs and tools to help developers integrate crypto payments in minutes.
           </p>
 
-          <div className="mt-6 sm:mt-8 flex flex-wrap gap-3">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-sm sm:text-base px-5 sm:px-8">
-              View API Docs
-            </Button>
-            <Button size="lg" variant="outline" className="text-sm sm:text-base px-5 sm:px-8">
+          <div className="mt-6 sm:mt-8 flex flex-wrap justify-center lg:justify-start gap-3 w-full">
+            <a href="/api-reference">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-sm sm:text-base px-5 sm:px-8">
+                View API Docs
+              </Button>
+            </a>
+            {/* <Button size="lg" variant="outline" className="text-sm sm:text-base px-5 sm:px-8">
               Try Sandbox
-            </Button>
+            </Button> */}
           </div>
         </div>
 
         {/* Right Stage Column */}
         <div className="relative w-full min-w-0 flex items-center justify-center">
-          <div className="stage-container">
+          <div className="stage-container" ref={stageContainerRef}>
             <div className="stage" id="stage">
               {/* RINGS */}
               <div className="rings">

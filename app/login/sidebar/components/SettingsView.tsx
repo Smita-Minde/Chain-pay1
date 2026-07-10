@@ -135,8 +135,9 @@ export default function SettingsView() {
             const formData = new FormData();
             formData.append("file", file);
 
+            let toastId: any = null;
             try {
-                toast.loading("Uploading logo...", { id: "logo-upload" });
+                toastId = toast.loading("Uploading logo...");
                 const res = await fetch(`${BASE_URL}/upload`, {
                     method: "POST",
                     headers: {
@@ -144,7 +145,7 @@ export default function SettingsView() {
                     },
                     body: formData,
                 });
-                toast.dismiss("logo-upload");
+                if (toastId) toast.dismiss(toastId);
                 if (res.ok) {
                     const responseData = await res.json();
                     const uploadedFilename = responseData?.data?.meta?.filename || responseData?.meta?.filename || responseData?.filename;
@@ -159,7 +160,7 @@ export default function SettingsView() {
                     toast.error(`Upload failed: ${errText || res.statusText}`);
                 }
             } catch (err: any) {
-                toast.dismiss("logo-upload");
+                if (toastId) toast.dismiss(toastId);
                 console.error("Error uploading logo:", err);
                 toast.error(`Error uploading logo: ${err.message}`);
             }
@@ -195,8 +196,9 @@ export default function SettingsView() {
             paymentOptionIds: selectedCryptos,
         };
 
+        let toastId: any = null;
         try {
-            toast.loading("Saving payment settings...", { id: "save-settings" });
+            toastId = toast.loading("Saving payment settings...");
             const res = await fetch(`${BASE_URL}/merchants/me/business`, {
                 method: "PUT",
                 headers: {
@@ -205,7 +207,7 @@ export default function SettingsView() {
                 },
                 body: JSON.stringify(payload),
             });
-            toast.dismiss("save-settings");
+            if (toastId) toast.dismiss(toastId);
             if (res.ok) {
                 toast.success("Payment settings updated successfully!");
             } else {
@@ -213,7 +215,7 @@ export default function SettingsView() {
                 toast.error(errData?.error?.message || errData?.message || "Failed to update payment settings");
             }
         } catch (error: any) {
-            toast.dismiss("save-settings");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error saving payment settings:", error);
             toast.error("An error occurred during save.");
         }
@@ -223,15 +225,16 @@ export default function SettingsView() {
         const token = getAuthToken();
         const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
 
+        let toastId: any = null;
         try {
-            toast.loading("Fetching API Key...", { id: "api-key" });
+            toastId = toast.loading("Fetching API Key...");
             const res = await fetch(`${BASE_URL}/merchants/me/api-key`, {
                 method: "GET",
                 headers: {
                     ...(token ? { "Authorization": `Bearer ${token}` } : {}),
                 },
             });
-            toast.dismiss("api-key");
+            if (toastId) toast.dismiss(toastId);
 
             if (res.ok) {
                 const responseData = await res.json();
@@ -246,7 +249,7 @@ export default function SettingsView() {
             // If GET doesn't return a key, generate a new one
             await handleRegenerateApiKey();
         } catch (error) {
-            toast.dismiss("api-key");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error loading API Key, trying to generate:", error);
             await handleRegenerateApiKey();
         }
@@ -256,15 +259,16 @@ export default function SettingsView() {
         const token = getAuthToken();
         const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
 
+        let toastId: any = null;
         try {
-            toast.loading("Generating API Key...", { id: "api-key" });
+            toastId = toast.loading("Generating API Key...");
             const res = await fetch(`${BASE_URL}/merchants/me/api-key`, {
                 method: "POST",
                 headers: {
                     ...(token ? { "Authorization": `Bearer ${token}` } : {}),
                 },
             });
-            toast.dismiss("api-key");
+            if (toastId) toast.dismiss(toastId);
 
             if (res.ok) {
                 const responseData = await res.json();
@@ -281,7 +285,7 @@ export default function SettingsView() {
                 toast.error(`Failed to generate API Key: ${errText || res.statusText}`);
             }
         } catch (error: any) {
-            toast.dismiss("api-key");
+            if (toastId) toast.dismiss(toastId);
             console.error("Error generating API Key:", error);
             toast.error(`Error generating API Key: ${error.message || error}`);
         }

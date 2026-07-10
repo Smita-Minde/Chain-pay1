@@ -17,7 +17,7 @@ const links = [
 ] as const;
 
 const dropdownIndustries = [
-    { name: "E-Commerce & Retail", path: "/industries/E-commerce&Retail" },
+    { name: "E-Commerce & Retail", path: "/industries/E-commerce-Retail" },
     { name: "Travel & Hospitality", path: "/industries/travel-hospitality" },
     { name: "Gaming & Entertainment", path: "/industries/gaming-entertainment" },
     { name: "Freelancers & Digital Services", path: "/industries/freelancer-digital-services" },

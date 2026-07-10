@@ -7,7 +7,7 @@ const testimonials = [
     initials: "SM",
     accent: "from-blue-500 to-indigo-500",
     quote:
-      "Their developer support is outstanding. Quick responses and great documentation helped us build our payment system smoothly. The merchant dashboard is a game-changer.",
+      "The developer documentation and support team helped us integrate faster than expected.",
   },
   {
     name: "Daniel Carter",
@@ -15,7 +15,7 @@ const testimonials = [
     initials: "DC",
     accent: "from-violet-500 to-fuchsia-500",
     quote:
-      "ChainPay made accepting crypto effortless. Integration took less than an afternoon and the fees are unbeatable. Our checkout conversion improved overnight.",
+      "The hosted checkout solution significantly reduced our engineering effort.",
   },
   {
     name: "Aisha Khan",
@@ -23,20 +23,20 @@ const testimonials = [
     initials: "AK",
     accent: "from-sky-500 to-cyan-400",
     quote:
-      "Reliable webhooks, clean APIs, and a sandbox that actually works. ChainPay is the crypto gateway we wish we had years ago.",
+      "Webhook support and custom metadata simplified our reconciliation workflows.",
   },
 ];
 
-const marqueeLogos = [
-  "STRIPE-X",
-  "NOVA PAY",
-  "BLOCKLINE",
-  "ORBIT FI",
-  "MERIDIAN",
-  "VAULTLY",
-  "ZENPAY",
-  "PRISMA",
-];
+// const marqueeLogos = [
+//   "STRIPE-X",
+//   "NOVA PAY",
+//   "BLOCKLINE",
+//   "ORBIT FI",
+//   "MERIDIAN",
+//   "VAULTLY",
+//   "ZENPAY",
+//   "PRISMA",
+// ];
 
 export function Testimonials() {
   return (
@@ -66,10 +66,10 @@ export function Testimonials() {
             Trusted Worldwide
           </div>
           <h2 className="mt-5 bg-gradient-to-r from-foreground via-primary to-foreground bg-[length:200%_auto] bg-clip-text text-4xl font-bold tracking-tight text-transparent animate-gradient md:text-5xl">
-            Loved by Global Partners
+            Trusted by Businesses Around the World
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Hear directly from teams who trust ChainPay to transform their crypto payments.
+            Organizations across industries rely on ChainPay to deliver secure and efficient cryptocurrency payment experiences.
           </p>
         </div>
 
@@ -122,7 +122,7 @@ export function Testimonials() {
         </div>
 
         {/* Marquee partner strip */}
-        <div className="relative mt-20 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_15%,black_85%,transparent)]">
+        {/* <div className="relative mt-20 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_15%,black_85%,transparent)]">
           <div className="flex w-max gap-12 animate-marquee">
             {[...marqueeLogos, ...marqueeLogos].map((logo, i) => (
               <span
@@ -133,7 +133,7 @@ export function Testimonials() {
               </span>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

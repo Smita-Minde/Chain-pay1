@@ -13,8 +13,8 @@ const items = [
   },
   {
     icon: TrendingDown,
-    title: "Lowest Fees, Highest Efficiency",
-    desc: "One of the most competitive transaction fee structures in the industry — reduce costs and increase margins without sacrificing speed or security.",
+    title: "Transparent & Secure Payment Control",
+    desc: "Enjoy industry leading transparent pricing with no hidden subscriptions or platform costs while keeping complete ownership and control of your funds through a secure non-custodial payment infrastructure.",
   },
 ];
 

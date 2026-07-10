@@ -131,7 +131,7 @@ export default function ApiReferencePage() {
       {/* </section> */}
 
       {/* Main Docs */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-4 lg:pt-12 pb-24">
+      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-4 lg:pt-12 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
           {/* Sidebar */}
@@ -201,7 +201,7 @@ export default function ApiReferencePage() {
 
             <section
               id="overview"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Overview
@@ -217,7 +217,7 @@ export default function ApiReferencePage() {
 
             <section
               id="environments"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Environments
@@ -233,7 +233,7 @@ export default function ApiReferencePage() {
 
             <section
               id="getting-started"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Getting Started
@@ -252,7 +252,7 @@ export default function ApiReferencePage() {
 
             <section
               id="auth"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <div className="flex items-center gap-3 mb-6">
                 <Key className="h-6 w-6 text-blue-600" />
@@ -274,7 +274,7 @@ export default function ApiReferencePage() {
 
             <section
               id="payment"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <div className="flex items-center gap-3 mb-6">
                 <CreditCard className="h-6 w-6 text-blue-600" />
@@ -283,8 +283,13 @@ export default function ApiReferencePage() {
                 </h2>
               </div>
 
-              <div className="mt-6 inline-flex rounded-full bg-green-100 px-4 py-2 text-green-700 text-sm font-semibold">
-                POST https://sandbox-api.chainpay.biz/payments/request
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-green-100 px-3 py-1 text-green-700 text-xs sm:text-sm font-bold uppercase">
+                  POST
+                </span>
+                <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
+                  https://sandbox-api.chainpay.biz/payments/request
+                </code>
               </div>
 
               <p className="mt-6 text-black-900 text-base sm:text-lg font-semibold">
@@ -385,7 +390,7 @@ Content-Type: application/json`}
 
             <section
               id="options"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Retrieve Available Payment Options
@@ -395,9 +400,14 @@ Content-Type: application/json`}
                 Endpoint
               </p>
 
-              <pre className="mt-6 rounded-xl bg-slate-900 p-5 text-sm text-white overflow-x-auto font-mono">
-                {` GET https://sandbox-api.chainpay.biz/payments/{payment_token}`}
-              </pre>
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700 text-xs sm:text-sm font-bold uppercase">
+                  GET
+                </span>
+                <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
+                  https://sandbox-api.chainpay.biz/payments/{`{payment_token}`}
+                </code>
+              </div>
 
               <p className="mt-6 text-black-900 text-base sm:text-lg font-semibold">
                 Example response
@@ -445,7 +455,7 @@ Content-Type: application/json`}
 
             <section
               id="payment-specific-details"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Retrieve Details of specific Payment Options
@@ -455,9 +465,14 @@ Content-Type: application/json`}
                 Endpoint
               </p>
 
-              <pre className="mt-6 rounded-xl bg-slate-900 p-5 text-sm text-white overflow-x-auto font-mono">
-                {` GET https://sandbox-api.chainpay.biz/payments/{payment_token}/options/{payment_option_symbol}`}
-              </pre>
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700 text-xs sm:text-sm font-bold uppercase">
+                  GET
+                </span>
+                <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
+                  https://sandbox-api.chainpay.biz/payments/{`{payment_token}/options/{payment_option_symbol}`}
+                </code>
+              </div>
 
               <p className="mt-6 text-black-900 text-base sm:text-lg font-semibold">
                 Example response
@@ -485,7 +500,7 @@ Content-Type: application/json`}
 
             <section
               id="status"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Check Payment Status
@@ -495,9 +510,14 @@ Content-Type: application/json`}
                 Endpoint
               </p>
 
-              <pre className="mt-6 rounded-xl bg-slate-900 p-5 text-sm text-white overflow-x-auto font-mono">
-                {` GET https://sandbox-api.chainpay.biz/payments/{payment_token}/status`}
-              </pre>
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700 text-xs sm:text-sm font-bold uppercase">
+                  GET
+                </span>
+                <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
+                  https://sandbox-api.chainpay.biz/payments/{`{payment_token}/status`}
+                </code>
+              </div>
 
               <p className="mt-6 text-black-900 text-base sm:text-lg font-semibold">
                 Example response
@@ -548,7 +568,7 @@ Content-Type: application/json`}
 
             <section
               id="logs"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-2xl hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-purple-500/10 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-2xl hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-purple-500/10 transition-all duration-300"
             >
               <div className="flex items-center gap-3 mb-6">
                 <Database className="h-6 w-6 text-blue-600" />
@@ -557,34 +577,33 @@ Content-Type: application/json`}
                 </h2>
               </div>
 
-              <div className="mt-8 border-l-4 border-blue-200 pl-6 space-y-8">
+              <div className="mt-8 border-l-4 border-blue-200 pl-6 space-y-6">
                 <p className="mt-6 text-black-900 text-base sm:text-lg font-semibold">
                   Endpoint
                 </p>
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200">
-                  <h4 className="font-bold text-slate-800">
-                    {/* <pre className="mt-6 rounded-xl bg-slate-900 p-5 text-sm text-white overflow-x-auto font-mono"> */}
-                    {`GET https://sandbox-api.chainpay.biz/payments/{payment_token}/logs`}
-                    {/* </pre> */}
-                  </h4>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700 text-xs sm:text-sm font-bold uppercase">
+                    GET
+                  </span>
+                  <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
+                    https://sandbox-api.chainpay.biz/payments/{`{payment_token}/logs`}
+                  </code>
                 </div>
+
                 <p className="mt-6 text-black-900 text-base sm:text-lg font-semibold">
                   Headers
                 </p>
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200">
-                  <h4 className="font-bold text-slate-800">
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 sm:p-5 hover:shadow-md transition-all duration-200 overflow-x-auto scrollbar-none">
+                  <code className="font-mono text-xs sm:text-sm font-bold text-slate-800 whitespace-nowrap">
                     {`x-api-key: YOUR_API_KEY`}
-                  </h4>
+                  </code>
                 </div>
 
                 <p className="mt-6 text-black-900 text-base sm:text-lg font-semibold">
                   Example response
                 </p>
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200">
-                  <h4 className="font-bold text-slate-800">
-                    <pre className="mt-6 rounded-xl bg-slate-900 p-5 text-sm text-white overflow-x-auto font-mono">
-                      {`{
-{
+                <pre className="mt-6 rounded-xl bg-slate-900 p-5 text-sm text-white overflow-x-auto font-mono">
+                  {`{
   "isPaid": false,
   "isExpired": false,
   "isPartial": false,
@@ -602,11 +621,8 @@ Content-Type: application/json`}
       "fiatValueOutstanding": "10"
     }
   }
-}
 }`}
-                    </pre>
-                  </h4>
-                </div>
+                </pre>
               </div>
 
               <p className="mt-6 text-black-600 text-base sm:text-lg font-semibold">
@@ -616,7 +632,7 @@ Content-Type: application/json`}
 
             <section
               id="webhooks"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <div className="flex items-center gap-3 mb-6">
                 <Webhook className="h-6 w-6 text-blue-600" />
@@ -626,19 +642,19 @@ Content-Type: application/json`}
               </div>
 
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200 font-semibold text-slate-800">
-                  When a payment is confirmed, ChainPay automatically triggers aPOST request to your <span className="font-semibold text-green-600">notifyUrl</span> with the payment details. Your server should:
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200 font-semibold text-slate-800 text-xs sm:text-sm">
+                  When a payment is confirmed, ChainPay automatically triggers a POST request to your <span className="font-semibold text-green-600">notifyUrl</span> with the payment details. Your server should:
                 </div>
 
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200 font-semibold text-slate-800">
-                  -Verify the <span className="font-semibold text-green-600">successToken</span> matches the one you received in the payment creation step.
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200 font-semibold text-slate-800 text-xs sm:text-sm">
+                  - Verify the <span className="font-semibold text-green-600">successToken</span> matches the one you received in the payment creation step.
                 </div>
 
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200 font-semibold text-slate-800">
-                  -Mark the order as paid in your database.
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200 font-semibold text-slate-800 text-xs sm:text-sm">
+                  - Mark the order as paid in your database.
                 </div>
 
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200 font-semibold text-slate-800">
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:shadow-md transition-all duration-200 font-semibold text-slate-800 text-xs sm:text-sm">
                   - Respond with "*ok" and HTTP status code 200 as quickly as possible.
                 </div>
               </div>
@@ -650,19 +666,19 @@ Content-Type: application/json`}
 
             <section
               id="redirect-on-success"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Redirect on Success
               </h2>
-              <p className="mt-6 text-black-900 text-base sm:text-lg font-semibold">
+              <p className="mt-6 text-slate-600 leading-relaxed text-base sm:text-lg">
                 Once a payment is marked as paid, the customer will be redirected to your configured redirectUrl, typically a success or order confirmation page.
               </p>
             </section>
 
             <section
               id="error-handling"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Error Handling
@@ -685,15 +701,12 @@ Content-Type: application/json`}
               <ul className="list-disc pl-5 text-slate-600 space-y-2 text-base">
                 <li>Sandbox: 103.119.171.59</li>
                 <li>Production: 45.198.14.124</li>
-
               </ul>
-
             </section>
-
 
             <section
               id="testing"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Testing
@@ -714,18 +727,18 @@ Content-Type: application/json`}
                 For local webhook testing, use ngrok to expose your local server to the internet:
               </p>
 
-              <p className="mt-6 text-black-600 text-base sm:text-lg font-semibold">
-                ngrok http YOUR_LOCAL_PORT
+              <pre className="mt-6 rounded-xl bg-slate-900 p-5 text-sm text-white overflow-x-auto font-mono">
+                {`ngrok http YOUR_LOCAL_PORT`}
+              </pre>
+
+              <p className="mt-6 text-slate-600 text-base">
+                Example test webhook URL: <a href="https://abc12345.ngrok.io/webhook" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">https://abc12345.ngrok.io/webhook</a>
               </p>
-
-              Example test webhook URL:<a href=" https://abc12345.ngrok.io/webhook" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline"> https://abc12345.ngrok.io/webhook</a>
-
-
             </section>
 
             <section
               id="other-api-references"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Other Api References
@@ -734,20 +747,36 @@ Content-Type: application/json`}
                 Additional API endpoints you may find useful:
               </p>
 
-              <ul className="list-disc pl-5 text-slate-600 space-y-2 text-base">
-                <li>GET https://sandbox-api.chainpay.biz/networks – Fetch all supported blockchains with network info.</li>
-                <li>GET https://sandbox-api.chainpay.biz/payments/options – Fetch all supported coins & tokens.</li>
-                <li>GET https://sandbox-api.chainpay.biz/fiat-currencies – Fetch all supported fiat currencies.</li>
-
+              <ul className="space-y-4 pl-0 text-slate-600 text-sm sm:text-base">
+                <li className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="rounded bg-blue-100 px-2 py-0.5 text-blue-700 text-xs font-bold font-mono">GET</span>
+                    <code className="text-slate-800 font-mono text-xs sm:text-sm bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded break-all">/networks</code>
+                  </div>
+                  <span className="text-slate-500 text-xs sm:text-sm">– Fetch all supported blockchains with network info.</span>
+                </li>
+                <li className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="rounded bg-blue-100 px-2 py-0.5 text-blue-700 text-xs font-bold font-mono">GET</span>
+                    <code className="text-slate-800 font-mono text-xs sm:text-sm bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded break-all">/payments/options</code>
+                  </div>
+                  <span className="text-slate-500 text-xs sm:text-sm">– Fetch all supported coins & tokens.</span>
+                </li>
+                <li className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="rounded bg-blue-100 px-2 py-0.5 text-blue-700 text-xs font-bold font-mono">GET</span>
+                    <code className="text-slate-800 font-mono text-xs sm:text-sm bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded break-all">/fiat-currencies</code>
+                  </div>
+                  <span className="text-slate-500 text-xs sm:text-sm">– Fetch all supported fiat currencies.</span>
+                </li>
               </ul>
-
             </section>
 
 
 
             <section
               id="summery"
-              className="scroll-mt-32 rounded-[32px] sm:rounded-[36px] bg-white p-6 sm:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
+              className="scroll-mt-32 rounded-2xl sm:rounded-[32px] bg-white p-5 sm:p-8 md:p-10 border border-slate-100/50 shadow-lg hover:bg-purple-50/70 hover:border-purple-300/80 hover:shadow-xl hover:shadow-purple-500/5 transition-all duration-300"
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
                 Summery
@@ -781,6 +810,9 @@ Content-Type: application/json`}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-slate-600 leading-relaxed">
+                        /payments/{"{payment_token}"}
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 leading-relaxed">
                         {/* /payments/{payment_token} */}
                       </td>
                     </tr>
@@ -790,6 +822,9 @@ Content-Type: application/json`}
                         <span className="px-2.5 py-1 text-xs font-mono font-semibold text-sky-700 bg-sky-50 border border-sky-100 rounded-md">
                           GET
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 leading-relaxed">
+                        /payments/{"{payment_token}/options/{symbol}"}
                       </td>
                       <td className="px-6 py-4 text-slate-600 leading-relaxed">
                         {/* /payments/{payment_token}/options/{symbol} */}
@@ -803,6 +838,9 @@ Content-Type: application/json`}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-slate-600 leading-relaxed">
+                        /payments/{"/payments/{payment_token}/status"}
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 leading-relaxed">
                         {/* /payments/{payment_token}/status */}
                       </td>
                     </tr>
@@ -813,6 +851,9 @@ Content-Type: application/json`}
                         <span className="px-2.5 py-1 text-xs font-mono font-semibold text-sky-700 bg-sky-50 border border-sky-100 rounded-md">
                           GET
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 leading-relaxed">
+                        /payments/{"/payments/{payment_token}/logs"}
                       </td>
                       <td className="px-6 py-4 text-slate-600 leading-relaxed">
                         {/* /payments/{payment_token}/logs */}

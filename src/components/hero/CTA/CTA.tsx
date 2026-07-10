@@ -53,7 +53,7 @@ $payment = $chainpay->payments->create([
 };
 
 export function CTA() {
-  const [activeTab, setActiveTab] = useState<keyof typeof codeBlocks>("Python");
+  const [activeTab, setActiveTab] = useState<keyof typeof codeBlocks>("cURL");
 
   const highlightCode = (code: string, lang: string) => {
     return code.split("\n").map((line, idx) => {
@@ -84,20 +84,20 @@ export function CTA() {
   };
 
   return (
-    <section className="relative mx-auto max-w-7xl px-6 py-20 md:py-28">
-      <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+    <section className="relative mx-auto max-w-7xl px-4 sm:px-6 py-20 md:py-28 overflow-hidden">
+      <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center w-full">
         {/* Left Side */}
-        <div className="lg:col-span-7 space-y-12 sm:space-y-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
+        <div className="lg:col-span-7 space-y-12 sm:space-y-16 w-full min-w-0">
+          <h2 className="text-3xl min-[360px]:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
             Accept Crypto Payments in <br className="hidden sm:inline" />
             Minutes <span className="text-blue-600">No Complex Setup</span>
           </h2>
 
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 w-full">
             {cards.map((c, i) => (
               <div
                 key={i}
-                className="group relative bg-white border border-slate-200/60 rounded-3xl p-5 sm:p-6 shadow-sm transition-all duration-300 hover:bg-blue-50/70 hover:border-blue-200/60 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-pointer"
+                className="group relative bg-white border border-slate-200/60 rounded-3xl p-4 min-[360px]:p-5 sm:p-6 shadow-sm transition-all duration-300 hover:bg-blue-50/70 hover:border-blue-200/60 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between cursor-pointer"
               >
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 leading-snug transition-colors duration-200">
@@ -114,8 +114,8 @@ export function CTA() {
         </div>
 
         {/* Right Side */}
-        <div className="lg:col-span-5">
-          <div className="bg-white border border-slate-200/60 rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col justify-between min-h-[350px]">
+        <div className="lg:col-span-5 w-full min-w-0">
+          <div className="bg-white border border-slate-200/60 rounded-3xl p-4 min-[360px]:p-6 sm:p-8 shadow-xl flex flex-col justify-between min-h-[350px]">
             <div>
               {/* Tab Selector */}
               <div className="flex items-center gap-2 sm:gap-4 pb-4 border-b border-slate-100 mb-6">
@@ -134,7 +134,7 @@ export function CTA() {
               </div>
 
               {/* Code Block */}
-              <div className="font-mono text-[12px] sm:text-xs md:text-sm leading-relaxed text-slate-800 overflow-x-auto min-h-[190px] whitespace-pre p-2">
+              <div className="font-mono text-[11px] sm:text-xs md:text-sm leading-relaxed text-slate-800 overflow-x-auto min-h-[190px] whitespace-pre p-2 scrollbar-none">
                 {highlightCode(codeBlocks[activeTab], activeTab)}
               </div>
             </div>
