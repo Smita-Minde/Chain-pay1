@@ -121,7 +121,7 @@ export function Footer() {
             </div>
 
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              The crypto payment gateway built for modern businesses. Accept Bitcoin, Ethereum, USDT and 50+ assets — settle to your wallet or bank in seconds.
+              The crypto payment gateway built for modern businesses. Accept Bitcoin, Ethereum, USDT and 50+ assetssettle to your wallet or bank in seconds.
             </p>
 
 

@@ -76,32 +76,32 @@ export default function StartupsEnterprises() {
     const supportedBusinesses = [
         {
             title: "Technology Startups",
-            desc: "Launch global products and scale payout systems without cross-border credit blocks.",
+            desc: "Launch global products without payment limitations or regional barriers.",
             icon: Laptop
         },
         {
             title: "SaaS Platforms",
-            desc: "Accept recurring user subscriptions, upgrades, and enterprise contract fees instantly.",
+            desc: "Accept subscriptions, upgrades, and enterprise contracts through cryptocurrency payments.",
             icon: Layers
         },
         {
             title: "Digital Marketplaces",
-            desc: "Facilitate secure client-to-merchant escrow checkouts and automate payout splits.",
+            desc: "Enable secure transactions between buyers and sellers worldwide.",
             icon: ShoppingBag
         },
         {
             title: "Enterprise Organizations",
-            desc: "Integrate high-speed ledger settlements directly into existing internal ERP frameworks.",
+            desc: "Integrate blockchain payments into existing operational workflows.",
             icon: Building2
         },
         {
             title: "Financial Platforms",
-            desc: "Expand digital transaction routes globally while retaining compliance metrics.",
+            desc: "Expand digital payment capabilities while maintaining compliance and security.",
             icon: Briefcase
         },
         {
             title: "Digital Product Companies",
-            desc: "Distribute software files, memberships, and assets instantly to global shoppers.",
+            desc: "Sell software, services, and memberships to a global audience.",
             icon: Sparkles
         }
     ];
@@ -109,31 +109,31 @@ export default function StartupsEnterprises() {
     const businessBenefits = [
         {
             title: "Rapid Time-To-Market",
-            desc: "Go live with cryptocurrency payments within days instead of waiting for traditional gateways.",
+            desc: "Launch cryptocurrency payments within days instead of months.",
             stats: "Immediate setup",
             icon: Zap
         },
         {
             title: "Global Expansion",
-            desc: "Accept user deposits borderlessly across 190+ countries through single Web3 endpoints.",
+            desc: "Accept payments from customers across multiple countries and regions.",
             stats: "Borderless checkout",
             icon: Globe
         },
         {
             title: "Lower Operating Costs",
-            desc: "Minimize transactional fees with a simple, flat 1% rate, bypassing credit card charges.",
+            desc: "Reduce payment processing expenses and eliminate unnecessary intermediaries.",
             stats: "1% flat fee",
             icon: Percent
         },
         {
             title: "Complete Ownership",
-            desc: "Retain absolute asset authority. Payouts route directly into secure non-custodial structures.",
+            desc: "Maintain direct control over business funds through a non-custodial model.",
             stats: "True Custody",
             icon: Lock
         },
         {
             title: "Reliable Infrastructure",
-            desc: "Leverage high-availability servers designed to manage enterprise flash-sale throughputs.",
+            desc: "Operate with highly available systems designed for enterprise requirements.",
             stats: "99.99% Uptime SLA",
             icon: Shield
         }
@@ -382,19 +382,19 @@ export default function StartupsEnterprises() {
                         transition={{ duration: 0.5, delay: 0.25 }}
                         className="flex flex-col sm:flex-row gap-4 justify-center pt-2"
                     >
-                        <a
+                        {/* <a
                             href="#cta"
                             className="group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white font-semibold rounded-2xl shadow-[0_4px_20px_rgba(37,99,235,0.2)] hover:shadow-[0_4px_25px_rgba(37,99,235,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                         >
                             <span>Contact Sales</span>
                             <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
-                        </a>
-                        {/* <a
-                            href="#developer-section"
-                            className="inline-flex items-center justify-center px-8 py-4 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold rounded-2xl shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                        </a> */}
+                        <a
+                            href="/api-reference"
+                            className="inline-flex items-center justify-center px-8 py-4 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold rounded-2xl shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 bg-gradient-to-r from-[#2563EB] to-[#3B82F6]"
                         >
                             Explore API Documentation
-                        </a> */}
+                        </a>
                     </motion.div>
                 </div>
 
@@ -793,7 +793,7 @@ export default function StartupsEnterprises() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <h4 className="font-extrabold text-sm text-[#0F172A]">{benefit.title}</h4>
-                                        <p className="text-xs text-[#64748B] leading-relaxed">{benefit.desc}</p>
+                                        <p className="text-sm text-[#64748B] leading-relaxed">{benefit.desc}</p>
                                     </div>
                                 </div>
                                 <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold text-blue-600 tracking-wide uppercase">

@@ -97,27 +97,27 @@ export default function GamingEntertainment() {
     const professionals = [
         {
             title: "Game Studios",
-            desc: "Enable direct purchases for games, expansions, DLCs, and digital items with absolute payout finality.",
+            desc: "Enable direct purchases for games, expansions, and downloadable content.",
             icon: Gamepad2
         },
         {
             title: "Esports Platforms",
-            desc: "Accept registrations, ticket purchases, and global event entry fees cleanly across borders.",
+            desc: "Accept registrations, ticket purchases, and event payments globally.",
             icon: Trophy
         },
         {
             title: "Streaming & Creator Platforms",
-            desc: "Support subscriptions, sponsor payouts, tipping loops, and member tiers with near-zero transfer friction.",
+            desc: "Support subscriptions, donations, and premium memberships.",
             icon: Tv
         },
         {
             title: "Digital Marketplaces",
-            desc: "Facilitate player-to-player purchases of skins, collections, and rare virtual assets instantly.",
+            desc: "Facilitate purchases of skins, collectibles, and virtual goods.",
             icon: ShoppingBag
         },
         {
             title: "Entertainment Platforms",
-            desc: "Offer seamless payment paths for movies, music streams, web series, and exclusive premium tickets.",
+            desc: "Offer seamless payments for movies, music, events, and exclusive content.",
             icon: Play
         }
     ];
@@ -158,31 +158,31 @@ export default function GamingEntertainment() {
     const businessBenefits = [
         {
             title: "Global Communities",
-            desc: "Unify player payments borderlessly. Accept deposits from gaming audiences located in 190+ countries.",
+            desc: "Reach players and audiences regardless of geography.",
             stats: "Borderless checkout",
             icon: Globe
         },
         {
             title: "Faster Transactions",
-            desc: "Provide zero-lag payment routes. Settle orders and unlock digital products for users in seconds.",
+            desc: "Enable immediate access to purchased content.",
             stats: "Immediate unlock",
             icon: Zap
         },
         {
             title: "Lower Processing Fees",
-            desc: "Reduce checkout overheads. ChainPay charges a simple, transparent flat rate of 1% per transaction.",
+            desc: "Reduce operational costs compared to traditional payment methods.",
             stats: "1% flat fee",
             icon: Percent
         },
         {
             title: "No Chargebacks",
-            desc: "Insulate agency cash reserves. blockchain finality blocks credit card transaction reversals.",
+            desc: "Blockchain transactions eliminate fraudulent payment reversals.",
             stats: "100% finality",
             icon: Shield
         },
         {
             title: "Scalable Infrastructure",
-            desc: "Enterprise-grade engine scales smoothly to handle flash sales, game launches, and ticket volumes.",
+            desc: "Support growing communities and high transaction volumes.",
             stats: "High-TPS ready",
             icon: Layers
         }
@@ -340,12 +340,12 @@ export default function GamingEntertainment() {
                                 <span>Start Accepting Crypto</span>
                                 <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
                             </a>
-                            <a
+                            {/* <a
                                 href="#timeline-section"
                                 className="inline-flex items-center justify-center px-8 py-4 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold rounded-2xl shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                             >
                                 Learn How it Works
-                            </a>
+                            </a> */}
                         </motion.div>
                     </div>
 
@@ -364,11 +364,11 @@ export default function GamingEntertainment() {
                         >
                             {/* Card Topbar (Mac window mock) */}
                             <div className="flex items-center justify-between px-6 py-4 border-b border-[#E2E8F0] bg-slate-50/50">
-                                <div className="flex items-center gap-1.5">
+                                {/* <div className="flex items-center gap-1.5">
                                     <span className="w-3.5 h-3.5 rounded-full bg-red-400/80" />
                                     <span className="w-3.5 h-3.5 rounded-full bg-amber-400/80" />
                                     <span className="w-3.5 h-3.5 rounded-full bg-emerald-400/80" />
-                                </div>
+                                </div> */}
                                 <div className="text-xs text-[#64748B] font-mono select-none">checkout.chainpay.com/game_store</div>
                                 <div className="w-8" />
                             </div>
@@ -665,7 +665,7 @@ export default function GamingEntertainment() {
                         <motion.div
                             animate={{ y: [0, -15, 0], rotate: [0, -5, 5, 0] }}
                             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                            className="absolute top-1/2 -right-8 z-20 bg-white border border-[#E2E8F0] shadow-lg rounded-2xl px-4 py-2 flex items-center gap-2 select-none"
+                            className="absolute top-1/2 right-2 md:-right-8 z-20 bg-white border border-[#E2E8F0] shadow-lg rounded-2xl px-4 py-2 flex items-center gap-2 select-none"
                         >
                             <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-extrabold">Ξ</div>
                             <span className="text-xs font-extrabold text-[#0F172A]">ETH</span>

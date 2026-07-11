@@ -91,7 +91,7 @@ export default function FreelancerDigitalServices() {
             icon: Shield
         },
         {
-            title: "Accept multiple cryptocurrencies",
+            title: "Accept multiple cryptocurrencies through a single platform",
             desc: "Provide clients flexibility to pay using major digital assets and stablecoins (USDC, USDT, ETH, BTC).",
             icon: Coins
         },
@@ -105,32 +105,32 @@ export default function FreelancerDigitalServices() {
     const professionals = [
         {
             title: "Freelance Developers",
-            desc: "Invoice clients borderlessly for code milestones, updates, and maintenance retainers with zero wire delays.",
+            desc: "Accept project payments from international clients without currency conversion issues.",
             icon: Code2
         },
         {
             title: "Design Agencies",
-            desc: "Collect creative retainer sums securely and settle large design invoices with finality.",
+            desc: "Receive payments for creative services with lower processing costs.",
             icon: Sparkles
         },
         {
             title: "Consultants & Coaches",
-            desc: "Accept consulting fees globally with simple, secure billing links and instant payout validation.",
+            desc: "Invoice clients globally with instant settlements.",
             icon: Briefcase
         },
         {
             title: "Content Creators",
-            desc: "Monetize direct sponsor slots, course sales, and subscription fees with minimal currency conversion fees.",
+            desc: "Accept direct payments, memberships, and sponsorships.",
             icon: Layers
         },
         {
             title: "Digital Marketing Agencies",
-            desc: "Manage payroll pools and route sub-contractor payout splits instantly using smart address routes.",
+            desc: "Simplify cross-border transactions for clients worldwide.",
             icon: TrendingUp
         },
         {
             title: "Online Educators",
-            desc: "Collect online tuition fees and course milestone payouts from students across 190+ countries.",
+            desc: "Receive payments for courses, workshops, and digital products.",
             icon: BookOpen
         }
     ];
@@ -171,31 +171,31 @@ export default function FreelancerDigitalServices() {
     const businessBenefits = [
         {
             title: "Faster Cash Flow",
-            desc: "Accelerate agency operational capital. Capital clears at blockchain velocities in seconds.",
+            desc: "Receive payments immediately instead of waiting several business days.",
             stats: "Immediate settlement",
             icon: Zap
         },
         {
             title: "Global Accessibility",
-            desc: "Accept client payments globally from shoppers located across 190+ countries.",
+            desc: "Work with clients anywhere without payment limitations.",
             stats: "No border restrictions",
             icon: Globe
         },
         {
             title: "Lower Costs",
-            desc: "Preserve client billing margins with a simple, transparent flat fee of 1% on deposits.",
+            desc: "Reduce processing fees compared to traditional international transfers.",
             stats: "1% flat fee",
             icon: Percent
         },
         {
             title: "Non-Custodial Ownership",
-            desc: "Bypass platform hold schedules. Settlements dispatch directly into your private addresses.",
+            desc: "Your funds remain under your control at all times.",
             stats: "True Custody",
             icon: Lock
         },
         {
             title: "No Chargebacks",
-            desc: "Settle with peace of mind. Cryptographic ledger payments eliminate the risk of friendly fraud.",
+            desc: "Blockchain payments provide transaction finality and reduce disputes.",
             stats: "100% finality",
             icon: Shield
         }
@@ -350,10 +350,10 @@ export default function FreelancerDigitalServices() {
                                 <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
                             </a>
                             <a
-                                href="#timeline-section"
+                                href="/integration-docs"
                                 className="inline-flex items-center justify-center px-8 py-4 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold rounded-2xl shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                             >
-                                Learn How it Works
+                                View Integratipn Doc
                             </a>
                         </motion.div>
                     </div>
@@ -373,11 +373,11 @@ export default function FreelancerDigitalServices() {
                         >
                             {/* Card Topbar (Mac window mock) */}
                             <div className="flex items-center justify-between px-6 py-4 border-b border-[#E2E8F0] bg-slate-50/50">
-                                <div className="flex items-center gap-1.5">
+                                {/* <div className="flex items-center gap-1.5">
                                     <span className="w-3.5 h-3.5 rounded-full bg-red-400/80" />
                                     <span className="w-3.5 h-3.5 rounded-full bg-amber-400/80" />
                                     <span className="w-3.5 h-3.5 rounded-full bg-emerald-400/80" />
-                                </div>
+                                </div> */}
                                 <div className="text-xs text-[#64748B] font-mono select-none">billing.chainpay.com/invoice_71A9</div>
                                 <div className="w-8" />
                             </div>
@@ -674,7 +674,7 @@ export default function FreelancerDigitalServices() {
                         <motion.div
                             animate={{ y: [0, -15, 0], rotate: [0, -5, 5, 0] }}
                             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                            className="absolute top-1/2 -right-8 z-20 bg-white border border-[#E2E8F0] shadow-lg rounded-2xl px-4 py-2 flex items-center gap-2 select-none"
+                            className="absolute top-1/2 right-2 md:-right-8 z-20 bg-white border border-[#E2E8F0] shadow-lg rounded-2xl px-4 py-2 flex items-center gap-2 select-none"
                         >
                             <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-extrabold">Ξ</div>
                             <span className="text-xs font-extrabold text-[#0F172A]">ETH</span>
@@ -692,7 +692,7 @@ export default function FreelancerDigitalServices() {
                     <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">
                         <div className="space-y-4 w-full">
                             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0F172A]">
-                                Why Freelancers & Agencies Choose ChainPay
+                                Why Freelancers Choose ChainPay
                             </h2>
                             <p className="text-base sm:text-lg text-[#64748B] leading-relaxed max-w-xl mx-auto lg:mx-0">
                                 Traditional international payments are slow, expensive, and dependent on intermediaries. ChainPay enables faster, simpler, and borderless transactions for modern digital professionals.
@@ -1077,7 +1077,7 @@ export default function FreelancerDigitalServices() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <h4 className="font-extrabold text-sm text-[#0F172A]">{benefit.title}</h4>
-                                        <p className="text-xs text-[#64748B] leading-relaxed">{benefit.desc}</p>
+                                        <p className="text-sm text-[#64748B] leading-relaxed">{benefit.desc}</p>
                                     </div>
                                 </div>
                                 <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold text-blue-600 tracking-wide uppercase">

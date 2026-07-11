@@ -180,31 +180,31 @@ export default function TravelHospitality() {
     const businessBenefits = [
         {
             title: "Global Accessibility",
-            desc: "Accept deposits from international travelers borderlessly across 190+ countries.",
-            stats: "Serve customers worldwide",
+            desc: "Serve customers from any region without banking limitations.",
+            stats: "Serve worldwide",
             icon: Globe
         },
         {
             title: "Lower Processing Costs",
-            desc: "Minimize transaction costs with a simple, transparent flat rate of 1% on deposits.",
+            desc: "Reduce fees compared to traditional international payment providers.",
             stats: "1% flat fee",
             icon: Percent
         },
         {
             title: "Faster Settlements",
-            desc: "Enjoy immediate payout settlements to bypass legacy bank clearing times.",
+            desc: "Access funds immediately instead of waiting several business days.",
             stats: "Immediate unlock",
             icon: Zap
         },
         {
             title: "Improved Customer Experience",
-            desc: "Delight digital users by offering payment options that fit Web3 lifestyles.",
-            stats: "Flexible checkout options",
+            desc: "Offer flexible payment choices for modern travelers.",
+            stats: "checkout options",
             icon: Sparkles
         },
         {
             title: "Secure Transactions",
-            desc: "Shield reservations from card disputes. Blockchain confirmations guarantee finality.",
+            desc: "Blockchain payments eliminate chargebacks and reduce fraud risks.",
             stats: "100% finality",
             icon: Shield
         }
@@ -362,12 +362,12 @@ export default function TravelHospitality() {
                                 <span>Start Accepting Crypto</span>
                                 <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
                             </a>
-                            <a
+                            {/* <a
                                 href="#timeline-section"
                                 className="inline-flex items-center justify-center px-8 py-4 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold rounded-2xl shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                             >
                                 Learn How it Works
-                            </a>
+                            </a> */}
                         </motion.div>
                     </div>
 
@@ -414,11 +414,11 @@ export default function TravelHospitality() {
                             >
                                 {/* Card Topbar (Mac window mock) */}
                                 <div className="flex items-center justify-between px-6 py-4 border-b border-[#E2E8F0] bg-slate-50/50">
-                                    <div className="flex items-center gap-1.5">
+                                    {/* <div className="flex items-center gap-1.5">
                                         <span className="w-3.5 h-3.5 rounded-full bg-red-400/80" />
                                         <span className="w-3.5 h-3.5 rounded-full bg-amber-400/80" />
                                         <span className="w-3.5 h-3.5 rounded-full bg-emerald-400/80" />
-                                    </div>
+                                    </div> */}
                                     <div className="text-xs text-[#64748B] font-mono select-none">checkout.chainpay.com/hotel_booking</div>
                                     <div className="w-8" />
                                 </div>

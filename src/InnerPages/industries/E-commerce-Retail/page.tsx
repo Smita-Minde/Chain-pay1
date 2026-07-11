@@ -186,27 +186,27 @@ export default function EcommerceRetail() {
     const benefits: Benefit[] = [
         {
             title: "Global Commerce Access",
-            desc: "Accept friction-free payments from customers across 190+ countries without foreign conversion markups.",
+            desc: "Accept payments from customers worldwide.",
             icon: Globe
         },
         {
             title: "Slash Settlement Costs",
-            desc: "Bypass legacy banking fees and interchange costs. Accept payments for a simple, flat fee of 1%.",
+            desc: "Reduce payment processing costs.",
             icon: Percent
         },
         {
             title: "Absolute Chargeback Immunity",
-            desc: "Blockchain settlements are absolute and cryptographically final. Stop chargeback disputes and friendly fraud forever.",
+            desc: "Eliminate chargebacks and fraudulent disputes.",
             icon: Shield
         },
         {
             title: "Self-Controlled Custody",
-            desc: "Retain complete custody over payouts. Settlements route instantly to the merchant-controlled wallets you specify.",
+            desc: "Receive funds directly into merchant-controlled wallets",
             icon: Wallet
         },
         {
             title: "Unified Web3 Interface",
-            desc: "Leverage a single, clean API integration that automatically supports major currencies and key blockchains.",
+            desc: "Support multiple cryptocurrencies through a single integration.",
             icon: Coins
         }
     ];
@@ -214,27 +214,27 @@ export default function EcommerceRetail() {
     const useCases: UseCase[] = [
         {
             title: "Online Fashion Stores",
-            description: "Deliver a fluid, state-of-the-art mobile checkout experience for global shoppers seeking designer apparel.",
+            description: "Accept international payments without currency conversion challenges.",
             icon: ShoppingBag
         },
         {
             title: "Electronics & Gadgets",
-            description: "Defend high-ticket retail transactions against credit card scams with irreversible ledger confirmations.",
+            description: "Enable secure high-value purchases with instant confirmations.",
             icon: Laptop
         },
         {
             title: "Digital Marketplaces",
-            description: "Automate global splits and instant payouts to content creators and software developers.",
+            description: "Sell software, templates, subscriptions, and downloadable products globally.",
             icon: Layers
         },
         {
             title: "Luxury & Premium Brands",
-            description: "Match product exclusivity with a bespoke checkout interface that aligns with top-tier brand styles.",
+            description: "Provide alternative payment options for modern crypto-native customers.",
             icon: Sparkles
         },
         {
             title: "Cross-Border Commerce",
-            description: "Unlock immediate customer bases in emerging economies where crypto density surpasses traditional credit cards.",
+            description: "Expand into new markets without traditional banking limitations.",
             icon: Globe
         }
     ];
@@ -460,12 +460,12 @@ export default function EcommerceRetail() {
                                 <span>Start Accepting Crypto</span>
                                 <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-200 group-hover:translate-x-1" />
                             </a>
-                            <a
+                            {/* <a
                                 href="#contact"
                                 className="inline-flex items-center justify-center px-8 py-4 bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-semibold rounded-2xl shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                             >
                                 Talk to Our Team
-                            </a>
+                            </a> */}
                         </motion.div>
                     </div>
 
@@ -802,7 +802,7 @@ export default function EcommerceRetail() {
                         <motion.div
                             animate={{ y: [0, -15, 0], rotate: [0, -5, 5, 0] }}
                             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                            className="absolute top-1/2 -right-8 z-20 bg-white border border-[#E2E8F0] shadow-lg rounded-2xl px-4 py-2 flex items-center gap-2 select-none"
+                            className="absolute top-1/2 right-2 md:-right-8 z-20 bg-white border border-[#E2E8F0] shadow-lg rounded-2xl px-4 py-2 flex items-center gap-2 select-none"
                         >
                             <div className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-extrabold">Ξ</div>
                             <span className="text-xs font-extrabold text-[#0F172A]">ETH</span>
@@ -823,7 +823,7 @@ export default function EcommerceRetail() {
                                 Why E-Commerce Businesses Choose ChainPay
                             </h2>
                             <p className="text-base sm:text-lg text-[#64748B] leading-relaxed max-w-xl mx-auto lg:mx-0">
-                                Take complete control of retail checkout margins and expand your store's customer footprint globally with direct blockchain payments.
+                                Modern online businesses require payment solutions that are fast, secure, and globally accessible. ChainPay enables merchants to serve international customers without relying on expensive intermediaries.
                             </p>
                         </div>
 
