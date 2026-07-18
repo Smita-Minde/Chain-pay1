@@ -550,17 +550,17 @@ export function Hero() {
       <div className="grid items-center gap-12 lg:grid-cols-2 w-full">
         {/* Left Copy Column */}
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left min-w-0 w-full z-10">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary animate-fade-in">
+          {/* <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary animate-fade-in">
             <Sparkles className="h-3.5 w-3.5" />
             Developer First • Business Ready
-          </div>
+          </div> */}
 
           <h1 className="mt-6 text-3xl min-[360px]:text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold leading-[1.1] sm:leading-[1.05] tracking-tight text-slate-900">
             Build. Integrate. Accept <span className="text-primary">Crypto.</span>
           </h1>
 
           <p className="mt-4 sm:mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-muted-foreground">
-            Powerful APIs and tools to help developers integrate crypto payments in minutes.
+            Powerful APIs and tools to help developers integrate crypto <br></br>payments in minutes.
           </p>
 
           <div className="mt-6 sm:mt-8 flex flex-wrap justify-center lg:justify-start gap-3 w-full">

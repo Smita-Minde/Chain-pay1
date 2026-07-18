@@ -113,12 +113,12 @@ export default function SupportedNetworksPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 lg:py-24 relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="flex flex-col items-start text-left">
-            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 -mt-20 rounded-full text-sm border border-blue-100 animate-fade-in">
+            {/* <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 -mt-20 rounded-full text-sm border border-blue-100 animate-fade-in">
               <Network size={16} />
               Supported Networks
-            </div>
+            </div> */}
 
-            <h1 className="mt-6 text-3xl min-[360px]:text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 tracking-tight">
+            <h1 className="mt-0 text-3xl min-[360px]:text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 tracking-tight">
               Accept Crypto
               <span className="block text-blue-600 mt-1 lg:mt-2">
                 Across Multiple Chains
@@ -493,10 +493,12 @@ export default function SupportedNetworksPage() {
             Integrate once and accept payments across multiple
             blockchain networks.
           </p>
-
-          <button className="mt-8 sm:mt-10 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl transition duration-300 relative z-10 shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 cursor-pointer">
-            Get Started
-          </button>
+          <Link href="/signup" >
+            <button
+              className="mt-8 sm:mt-10 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl transition duration-300 relative z-10 shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 cursor-pointer">
+              Get Started
+            </button>
+          </Link>
         </div>
       </section>
     </div>

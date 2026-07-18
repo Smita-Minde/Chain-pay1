@@ -224,6 +224,7 @@ export default function SignupPage() {
                         width={176}
                         height={176}
                         priority
+                        unoptimized
                         className="w-full h-full object-contain"
                     />
                 </motion.div>
@@ -293,6 +294,7 @@ export default function SignupPage() {
                         width={112}
                         height={112}
                         priority
+                        unoptimized
                         className="w-full h-full object-contain"
                     />
                 </motion.div>

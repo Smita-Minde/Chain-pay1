@@ -18,9 +18,9 @@ export default function AboutPage() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center lg:items-start">
 
           <div className="relative z-10 lg:pt-0">
-            <div className="inline-flex px-5 py-2.5 rounded-full border border-blue-200/60 bg-blue-50/80 backdrop-blur text-blue-600 font-semibold text-sm tracking-wide">
+            {/* <div className="inline-flex px-5 py-2.5 rounded-full border border-blue-200/60 bg-blue-50/80 backdrop-blur text-blue-600 font-semibold text-sm tracking-wide">
               About ChainPay
-            </div>
+            </div> */}
 
             <h1 className="mt-4 text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.15] text-slate-900">
               Redefining the Future of{" "}
@@ -293,7 +293,7 @@ export default function AboutPage() {
 
             <div className="relative px-5 py-12 sm:px-8 sm:py-16 md:px-12 md:py-20">
               <div className="text-center mb-12">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-600">Benefits</p>
+                {/* <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-600">Benefits</p> */}
                 <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-slate-900">Why Choose ChainPay?</h2>
               </div>
 
@@ -348,7 +348,7 @@ export default function AboutPage() {
 
             <div className="relative px-5 py-12 sm:px-8 sm:py-16 md:px-12 md:py-20">
               <div className="text-center mb-12">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-600">Journey</p>
+                {/* <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-600">Journey</p> */}
                 <h2 className="mt-4 text-3xl sm:text-5xl font-bold tracking-tight text-slate-900">Our Journey</h2>
                 <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600">
                   Discover the milestones that shaped ChainPay and see how our vision turned into fast, secure crypto payment experiences.

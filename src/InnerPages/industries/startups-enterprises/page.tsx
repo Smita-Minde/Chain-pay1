@@ -336,10 +336,10 @@ export default function StartupsEnterprises() {
                 <div className="max-w-4xl mx-auto space-y-8">
 
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold mx-auto">
+                    {/* <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold mx-auto">
                         <Building2 className="w-3.5 h-3.5" />
                         <span>Enterprise Payments Platform</span>
-                    </div>
+                    </div> */}
 
                     {/* Headings */}
                     <div className="space-y-4">
