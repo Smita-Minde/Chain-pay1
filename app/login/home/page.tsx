@@ -7,7 +7,7 @@ import HomeView from "../sidebar/components/HomeView";
 export default function HomePage() {
     const router = useRouter();
 
-    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings') => {
+    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings' | 'Paymentinspector') => {
         if (view === 'home') {
             router.push('/login/home');
         } else if (view === 'transaction') {
@@ -16,6 +16,9 @@ export default function HomePage() {
             router.push('/login/payout');
         } else if (view === 'settings') {
             router.push('/login/AccountSetting');
+        }
+        else if (view === 'Paymentinspector') {
+            router.push('/login/Paymentinspector');
         }
     };
 

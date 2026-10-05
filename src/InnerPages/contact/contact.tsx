@@ -21,7 +21,7 @@ export default function ContactPage() {
 
     try {
       const response = await fetch(
-        "https://sandbox-api.chainpay.biz/contact-us",
+        "https://staging-api.chainpay.biz/contact-us",
         {
           method: "POST",
           headers: {

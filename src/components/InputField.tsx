@@ -19,9 +19,8 @@ export const InputField: React.FC<InputFieldProps> = ({
         </label>
       )}
       <input
-        className={`w-full bg-[#0a0a0a] text-white placeholder-gray-500 rounded-lg border border-gray-800 px-4 py-3 outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition duration-200 ${className} ${
-          errMsg ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-        }`}
+        className={`w-full bg-[#0a0a0a] text-white placeholder-gray-500 rounded-lg border border-gray-800 px-4 py-3 outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition duration-200 ${className} ${errMsg ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+          }`}
         {...props}
       />
       {errMsg && (

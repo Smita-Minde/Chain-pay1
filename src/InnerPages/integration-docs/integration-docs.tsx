@@ -210,7 +210,7 @@ export default function IntegrationGuidePage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block">Endpoint</span>
                 <div className="flex items-center gap-3 bg-slate-900 text-white rounded-xl px-4 py-3 font-mono text-sm overflow-x-auto">
                   <span className="bg-green-500 text-slate-900 font-bold px-2.5 py-1 rounded-md text-xs">POST</span>
-                  <span className="text-slate-300">https://sandbox-api.chainpay.biz/payments/request</span>
+                  <span className="text-slate-300">https://staging-api.chainpay.biz4/payments/request</span>
                 </div>
               </div>
 

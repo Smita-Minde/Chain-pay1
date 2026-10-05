@@ -39,8 +39,24 @@ const AddressModal: React.FC<AddressModalProps> = ({
   const [errors, setErrors] = useState<any[]>([]);
 
   useEffect(() => {
-    if (singleNetwork?.addresses && singleNetwork.addresses.length > 0) {
-      const updatedAddresses = singleNetwork.addresses.map((item, index) => {
+    let existing = singleNetwork?.addresses;
+    if (!existing || existing.length === 0) {
+      try {
+        const netKey = String(singleNetwork?.id || '');
+        const stored = localStorage.getItem('merchant_configured_wallets');
+        if (stored && netKey) {
+          const walletMap = JSON.parse(stored);
+          if (walletMap[netKey] && walletMap[netKey].length > 0) {
+            existing = walletMap[netKey];
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    if (existing && existing.length > 0) {
+      const updatedAddresses = existing.map((item: any, index: number) => {
         const { networkId, ...rest } = item;
         return {
           ...rest,
@@ -135,13 +151,45 @@ const AddressModal: React.FC<AddressModalProps> = ({
         wallets: addresses.map(({ id, ...rest }) => rest),
       };
       const response = await postReq('/merchant/me/wallets', payload);
-      if (response.status) {
+      const isError =
+        !response ||
+        response.status === false ||
+        Boolean(response.error) ||
+        (typeof response.statusCode === 'number' && response.statusCode >= 400);
+
+      if (!isError) {
+        try {
+          const netKey = String(singleNetwork?.id || '');
+          const netName = String(singleNetwork?.name || '');
+          const stored = localStorage.getItem('merchant_configured_wallets');
+          const walletMap = stored ? JSON.parse(stored) : {};
+          const cleanWallets = addresses.map(({ id, ...rest }) => rest);
+
+          if (netKey) {
+            walletMap[netKey] = cleanWallets;
+            localStorage.setItem(`wallet_network_id_${netKey}`, JSON.stringify(cleanWallets));
+          }
+          if (netName) {
+            walletMap[netName] = cleanWallets;
+            walletMap[netName.toLowerCase()] = cleanWallets;
+            localStorage.setItem(`wallet_network_${netName}`, JSON.stringify(cleanWallets));
+          }
+          localStorage.setItem('merchant_configured_wallets', JSON.stringify(walletMap));
+        } catch (e) {
+          console.error(e);
+        }
+
         refreshFunction();
         toast.success('Wallets added successfully !');
         setAddresses([{ id: Date.now(), address: '', percent: 100 }]);
         setOpen(false);
       } else {
-        showErrorMessage(response?.error?.message);
+        showErrorMessage(
+          response?.error?.message ||
+          response?.message ||
+          response?.error ||
+          'Failed to save wallet address',
+        );
       }
     }
   };

@@ -15,14 +15,30 @@ export default function SettingsView() {
     const [generatedApiKey, setGeneratedApiKey] = useState("");
     const [networks, setNetworks] = useState<any[]>([]);
 
+    const [savedWallets, setSavedWallets] = useState<Record<string, any[]>>({});
+
+    const loadNetworksAndWallets = async () => {
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
+        try {
+            const res = await fetch(`${BASE_URL}/networks`);
+            const data = await res.json();
+            setNetworks(data);
+        } catch (err) {
+            console.error(err);
+        }
+
+        try {
+            const stored = localStorage.getItem("merchant_configured_wallets");
+            if (stored) {
+                setSavedWallets(JSON.parse(stored));
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     useEffect(() => {
-        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
-        fetch(`${BASE_URL}/networks`)
-            .then((res) => res.json())
-            .then((data) => {
-                setNetworks(data);
-            })
-            .catch((err) => console.error(err));
+        loadNetworksAndWallets();
     }, []);
 
     // Payment settings states
@@ -54,7 +70,26 @@ export default function SettingsView() {
     useEffect(() => {
         const loadPaymentSettingsData = async () => {
             const token = getAuthToken();
-            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
+
+            // Load Merchant Profile
+            if (token) {
+                try {
+                    const res = await fetch(`${BASE_URL}/merchants/me`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    if (res.ok) {
+                        const responseData = await res.json();
+                        console.log("Merchant Details:", responseData);
+                    }
+                } catch (err) {
+                    console.error("Error loading merchant details:", err);
+                }
+            }
 
             // Load Fiat Currencies
             try {
@@ -131,7 +166,7 @@ export default function SettingsView() {
             setLogoPreview(URL.createObjectURL(file));
 
             const token = getAuthToken();
-            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
             const formData = new FormData();
             formData.append("file", file);
 
@@ -187,7 +222,7 @@ export default function SettingsView() {
         }
 
         const token = getAuthToken();
-        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
 
         const payload = {
             name: businessName,
@@ -210,6 +245,23 @@ export default function SettingsView() {
             if (toastId) toast.dismiss(toastId);
             if (res.ok) {
                 toast.success("Payment settings updated successfully!");
+
+                setBusinessName("");
+                setSelectedCurrency("");
+                setSelectedCryptos([]);
+                setLogoFile(null);
+                setLogoPreview(null);
+                setLogoFilename(null);
+                setOpenCryptoDropdown(false);
+
+                const input = document.getElementById(
+                    "business-logo-upload"
+                ) as HTMLInputElement;
+
+                if (input) {
+                    input.value = "";
+                }
+
             } else {
                 const errData = await res.json().catch(() => ({}));
                 toast.error(errData?.error?.message || errData?.message || "Failed to update payment settings");
@@ -223,7 +275,7 @@ export default function SettingsView() {
 
     const handleGenerateApiKey = async () => {
         const token = getAuthToken();
-        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
 
         let toastId: any = null;
         try {
@@ -257,7 +309,7 @@ export default function SettingsView() {
 
     const handleRegenerateApiKey = async () => {
         const token = getAuthToken();
-        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
 
         let toastId: any = null;
         try {
@@ -317,42 +369,38 @@ export default function SettingsView() {
                             🔁 When changing your blockchain address, ensure you generate new payment addresses for your customers. If the addresses were created before the change, they will continue sending funds to the previously set address.
                         </p>
                         <div className="space-y-2 mb-4">
-                            {networks.map((net) => (
-                                <div key={net.id} className="flex justify-between items-center bg-white/85 p-3 rounded-2xl border border-slate-100">
-                                    <span className="text-sm font-semibold text-slate-700">{net.name}</span>
-                                    <button
-                                        onClick={() => {
-                                            setSingleNetwork(net);
-                                            setOpenAddressModal(true);
-                                        }}
-                                        className="text-sm font-semibold text-blue-600 hover:underline bg-transparent border-none cursor-pointer"
-                                    >
-                                        Configure
-                                    </button>
-                                </div>
-                            ))}
+                            {networks.map((net) => {
+                                const netSaved = savedWallets[String(net.id)] || savedWallets[net.name];
+                                const isConfigured = Boolean(netSaved && netSaved.length > 0 && netSaved[0].address);
+
+                                return (
+                                    <div key={net.id} className="flex justify-between items-center bg-white/85 p-3 rounded-2xl border border-slate-100 shadow-sm">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-semibold text-slate-700">{net.name}</span>
+                                            {isConfigured && (
+                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200/50">
+                                                    Configured ✓
+                                                </span>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setSingleNetwork({
+                                                    ...net,
+                                                    addresses: netSaved || []
+                                                });
+                                                setOpenAddressModal(true);
+                                            }}
+                                            className="text-sm font-semibold text-blue-600 hover:underline bg-transparent border-none cursor-pointer"
+                                        >
+                                            {isConfigured ? "Edit" : "Configure"}
+                                        </button>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
-
-                {/* Developer API Key */}
-                <div className="rounded-3xl border border-white/40 bg-white/60 p-6 shadow-xl backdrop-blur-md flex flex-col justify-between">
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-800 mb-2">API Security Keys</h3>
-                        <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-                            Generate authentication keys to secure transactions triggered from your custom backend API integration.
-                        </p>
-                    </div>
-                    <button
-                        onClick={handleGenerateApiKey}
-                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition cursor-pointer shadow-md shadow-blue-500/10 border-none"
-                    >
-                        View / Generate API Key
-                    </button>
-                </div>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2">
                 {/* Payment Settings */}
                 <div className="rounded-3xl border border-white/40 bg-white/60 p-6 shadow-xl backdrop-blur-md">
                     <h3 className="text-lg font-bold text-slate-800 mb-2">Payment Settings</h3>
@@ -470,11 +518,10 @@ export default function SettingsView() {
                                                         setSelectedCryptos([...selectedCryptos, crypto.id]);
                                                     }
                                                 }}
-                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-between border-none ${
-                                                    isSelected
-                                                        ? "bg-blue-50 text-blue-600 font-semibold"
-                                                        : "hover:bg-slate-50 text-slate-700 bg-transparent"
-                                                }`}
+                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-between border-none ${isSelected
+                                                    ? "bg-blue-50 text-blue-600 font-semibold"
+                                                    : "hover:bg-slate-50 text-slate-700 bg-transparent"
+                                                    }`}
                                             >
                                                 <div className="flex items-center gap-2">
                                                     {crypto.logo && (
@@ -494,10 +541,31 @@ export default function SettingsView() {
                             type="submit"
                             className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition duration-200 cursor-pointer border-none shadow-md shadow-blue-500/10 text-sm uppercase tracking-wider mt-4"
                         >
-                            Save Settings
+                            Save
                         </button>
                     </form>
                 </div>
+
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+
+                {/* Developer API Key */}
+                <div className="rounded-3xl border border-white/40 bg-white/60 p-6 shadow-xl backdrop-blur-md flex flex-col justify-between">
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-2">API Security Keys</h3>
+                        <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+                            Generate authentication keys to secure transactions triggered from your custom backend API integration.
+                        </p>
+                    </div>
+                    <button
+                        onClick={handleGenerateApiKey}
+                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition cursor-pointer shadow-md shadow-blue-500/10 border-none"
+                    >
+                        View / Generate API Key
+                    </button>
+                </div>
+
             </div>
 
             {/* Address Modal configuration */}
@@ -506,7 +574,7 @@ export default function SettingsView() {
                     setOpen={setOpenAddressModal}
                     singleNetwork={singleNetwork}
                     setSingleNetwork={setSingleNetwork}
-                    refreshFunction={() => { }}
+                    refreshFunction={loadNetworksAndWallets}
                 />
             )}
 

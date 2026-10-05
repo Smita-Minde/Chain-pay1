@@ -7,15 +7,17 @@ import {
     Send,
     Settings,
     LogOut,
-    ArrowLeft
+    ArrowLeft,
+    ArrowLeftRight
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@hooks";
 import Link from "next/link";
+import { Arrow } from "@radix-ui/react-context-menu";
 
 interface DashboardLayoutProps {
-    activeView: 'home' | 'transaction' | 'payout' | 'settings';
+    activeView: 'home' | 'transaction' | 'payout' | 'settings' | 'Paymentinspector';
     children: React.ReactNode;
 }
 
@@ -33,7 +35,7 @@ export default function DashboardLayout({ activeView, children }: DashboardLayou
         }
     }, [router]);
 
-    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings') => {
+    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings' | 'paymentinspector') => {
         if (view === 'home') {
             router.push('/login/home');
         } else if (view === 'transaction') {
@@ -42,6 +44,8 @@ export default function DashboardLayout({ activeView, children }: DashboardLayou
             router.push('/login/payout');
         } else if (view === 'settings') {
             router.push('/login/AccountSetting');
+        } else if (view === 'paymentinspector') {
+            router.push('/login/Paymentinspector');
         }
     };
 
@@ -80,56 +84,79 @@ export default function DashboardLayout({ activeView, children }: DashboardLayou
                 <Image src="/3Dlogoballs/bnb3d.png" alt="BNB 3D" width={128} height={128} className="object-contain animate-float-fast" />
             </div>
 
-            {/* Left Sidebar */}
-            <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/40 bg-white/30 backdrop-blur-xl shadow-lg p-6 flex flex-col justify-between shrink-0 md:h-full z-20 md:rounded-r-[32px]">
-                <div>
+            {/* Left Sidebar on Desktop / Horizontal Compact Pill Navigation on Mobile */}
+            <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/40 bg-white/50 backdrop-blur-xl shadow-sm md:shadow-lg p-2.5 sm:p-3 md:p-6 flex flex-row md:flex-col justify-between items-center md:items-stretch shrink-0 md:h-full z-20 md:rounded-r-[32px] overflow-x-auto md:overflow-x-visible [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                <div className="w-full md:w-auto">
                     {/* Navigation Menu */}
-                    <nav className="space-y-1">
+                    <nav className="flex flex-row md:flex-col items-center md:items-stretch gap-1.5 md:space-y-1 md:gap-0 w-full">
                         <button
                             onClick={() => handleNav('home')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer border-none ${activeView === 'home'
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
-                                    : 'text-slate-700 hover:bg-white/30 hover:text-blue-600 bg-transparent'
+                            className={`flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer border-none whitespace-nowrap shrink-0 ${activeView === 'home'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/40 hover:text-blue-600 bg-transparent'
                                 }`}
                         >
-                            <LayoutDashboard size={18} />
-                            Home
+                            <LayoutDashboard size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span>Home</span>
                         </button>
+
                         <button
                             onClick={() => handleNav('transaction')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer border-none ${activeView === 'transaction'
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
-                                    : 'text-slate-700 hover:bg-white/30 hover:text-blue-600 bg-transparent'
+                            className={`flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer border-none whitespace-nowrap shrink-0 ${activeView === 'transaction'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/40 hover:text-blue-600 bg-transparent'
                                 }`}
                         >
-                            <Receipt size={18} />
-                            Transaction
+                            <Receipt size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span>Transaction</span>
                         </button>
+
                         <button
                             onClick={() => handleNav('payout')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer border-none ${activeView === 'payout'
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
-                                    : 'text-slate-700 hover:bg-white/30 hover:text-blue-600 bg-transparent'
+                            className={`flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer border-none whitespace-nowrap shrink-0 ${activeView === 'payout'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/40 hover:text-blue-600 bg-transparent'
                                 }`}
                         >
-                            <Send size={18} />
-                            Payout
+                            <Send size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span>Payout</span>
                         </button>
+
                         <button
                             onClick={() => handleNav('settings')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 cursor-pointer border-none ${activeView === 'settings'
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
-                                    : 'text-slate-700 hover:bg-white/30 hover:text-blue-600 bg-transparent'
+                            className={`flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer border-none whitespace-nowrap shrink-0 ${activeView === 'settings'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/40 hover:text-blue-600 bg-transparent'
                                 }`}
                         >
-                            <Settings size={18} />
-                            Account Setting
+                            < Settings size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span>Account Setting</span>
+                        </button>
+
+                        <button
+                            onClick={() => handleNav('paymentinspector')}
+                            className={`flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer border-none whitespace-nowrap shrink-0 ${activeView === 'settings'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/40 hover:text-blue-600 bg-transparent'
+                                }`}
+                        >
+                            <ArrowLeftRight size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span>Payment Inspector</span>
+                        </button>
+
+                        {/* Mobile Logout Button (in horizontal bar) */}
+                        <button
+                            onClick={handleLogout}
+                            className="md:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50/50 transition-all duration-200 cursor-pointer border-none bg-transparent whitespace-nowrap shrink-0 ml-auto"
+                        >
+                            <LogOut size={15} />
+                            <span>Log Out</span>
                         </button>
                     </nav>
                 </div>
 
-                {/* Bottom Logout */}
-                <div className="mt-6 pt-4 border-t border-white/20 flex flex-col gap-3">
+                {/* Desktop Bottom Logout */}
+                <div className="hidden md:flex mt-6 pt-4 border-t border-white/20 flex-col gap-3">
                     <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-rose-600 hover:bg-rose-50/50 transition-all duration-200 cursor-pointer border-none bg-transparent"
@@ -141,15 +168,15 @@ export default function DashboardLayout({ activeView, children }: DashboardLayou
             </div>
 
             {/* Right Content Panel */}
-            <div className="flex-1 p-6 md:p-10 relative z-10 md:h-full overflow-y-auto">
-                {/* Mobile Back Button */}
-                <div className="md:hidden mb-6">
+            <div className="flex-1 p-4 sm:p-6 md:p-10 relative z-10 md:h-full overflow-y-auto">
+                {/* Mobile Back Button (Clean Compact Chip) */}
+                <div className="md:hidden mb-4">
                     <Link
                         href="/"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all active:scale-[0.98] shadow-sm"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/80 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition-all active:scale-[0.98] shadow-sm backdrop-blur-md"
                     >
-                        <ArrowLeft className="w-4 h-4" />
-                        Back
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        Back to Home
                     </Link>
                 </div>
                 {children}

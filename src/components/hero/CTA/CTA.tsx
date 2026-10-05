@@ -23,7 +23,7 @@ const cards = [
 ];
 
 const codeBlocks: Record<string, string> = {
-  cURL: `curl -X POST https://sandbox-api.chainpay.biz/payments/request \
+  cURL: `curl -X POSThttps://staging-api.chainpay.biz/payments/request \
   -H "x-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

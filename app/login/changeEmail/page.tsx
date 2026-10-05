@@ -123,7 +123,7 @@ export default function ChangeEmailPage() {
             }
 
             const token = localStorage.getItem("token");
-            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
 
             await fetch(`${BASE_URL}/admin/change-email`, {
                 method: "POST",

@@ -225,7 +225,7 @@ export default function ApiReferencePage() {
 
               <ul className="list-disc pl-5 text-slate-600 space-y-2 text-base">
                 <li>Sandbox Dashboard: <a href="https://sandbox.chainpay.biz" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">https://sandbox.chainpay.biz</a></li>
-                <li>Sandbox API Base URL:<span className="text-black">https://sandbox-api.chainpay.biz</span></li>
+                <li>Sandbox API Base URL:<span className="text-black">https://staging-api.chainpay.biz</span></li>
                 <li>Production Dashboard: <a href="https://chainpay.biz" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">https://chainpay.biz</a></li>
                 <li>Production API Base URL: <span className="text-black">https://api.chainpay.biz</span></li>
               </ul>
@@ -267,7 +267,7 @@ export default function ApiReferencePage() {
               </p>
 
               <pre className="mt-6 rounded-xl bg-slate-900 p-5 text-sm text-green-400 overflow-x-auto font-mono">
-                {`curl -X GET "https://sandbox-api.chainpay.biz/payments/{token}/logs" \
+                {`curl -X GET "https://staging-api.chainpay.biz/payments/{token}/logs" \
   -H x-api-key: YOUR_API_KEY"`}
               </pre>
             </section>
@@ -288,7 +288,7 @@ export default function ApiReferencePage() {
                   POST
                 </span>
                 <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
-                  https://sandbox-api.chainpay.biz/payments/request
+                  https://staging-api.chainpay.biz/payments/request
                 </code>
               </div>
 
@@ -405,7 +405,7 @@ Content-Type: application/json`}
                   GET
                 </span>
                 <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
-                  https://sandbox-api.chainpay.biz/payments/{`{payment_token}`}
+                https://staging-api.chainpay.biz/payments/{`{payment_token}`}
                 </code>
               </div>
 
@@ -417,7 +417,7 @@ Content-Type: application/json`}
                 {`{
   "business": {
     "name": "Test Merchant",
-    "logo": "https://sandbox-api.chainpay.biz/storage/merchant/business/logo/de37d304176a484812142ec46dc322c2.jpeg"
+    "logo": "https://staging-api.chainpay.biz/storage/merchant/business/logo/de37d304176a484812142ec46dc322c2.jpeg"
   },
   "isPaid": false,
   "isExpired": false,
@@ -435,7 +435,7 @@ Content-Type: application/json`}
     {
       "name": "BNB",
       "displayName": "BNB (BEP20)",
-      "logo": "https://sandbox-api.chainpay.biz/static/img/logos/bnb.png",
+      "logo": "https://staging-api.chainpay.biz/static/img/logos/bnb.png",
       "symbol": "BEP20_BNB",
       "value": "0.007898901521076995",
       "fiatValue": "10.00000000000000001"
@@ -443,7 +443,7 @@ Content-Type: application/json`}
     {
       "name": "USDT",
       "displayName": "USDT (BEP20)",
-      "logo": "https://sandbox-api.chainpay.biz/static/img/logos/bnb_usdt.png",
+      "logo": "https://staging-api.chainpay.biz/static/img/logos/bnb_usdt.png",
       "symbol": "BEP20_USDT",
       "value": "9.995416473620838367",
       "fiatValue": "10"
@@ -470,7 +470,7 @@ Content-Type: application/json`}
                   GET
                 </span>
                 <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
-                  https://sandbox-api.chainpay.biz/payments/{`{payment_token}/options/{payment_option_symbol}`}
+                  https://staging-api.chainpay.biz/payments/{`{payment_token}/options/{payment_option_symbol}`}
                 </code>
               </div>
 
@@ -515,7 +515,7 @@ Content-Type: application/json`}
                   GET
                 </span>
                 <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
-                  https://sandbox-api.chainpay.biz/payments/{`{payment_token}/status`}
+                 https://staging-api.chainpay.biz/payments/{`{payment_token}/status`}
                 </code>
               </div>
 
@@ -586,7 +586,7 @@ Content-Type: application/json`}
                     GET
                   </span>
                   <code className="px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs sm:text-sm font-mono break-all">
-                    https://sandbox-api.chainpay.biz/payments/{`{payment_token}/logs`}
+                   https://staging-api.chainpay.biz/payments/{`{payment_token}/logs`}
                   </code>
                 </div>
 

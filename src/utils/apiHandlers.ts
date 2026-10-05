@@ -8,10 +8,10 @@ const getBaseUrl = () => {
       const url = new URL(envUrl);
       return url.origin;
     } catch (e) {
-      return 'https://sandbox-api.chainpay.biz';
+      return 'https://staging-api.chainpay.biz';
     }
   }
-  return 'https://sandbox-api.chainpay.biz';
+  return 'https://staging-api.chainpay.biz';
 };
 
 const BASE_URL = getBaseUrl();
@@ -76,12 +76,27 @@ const handleAuthMock = (url: string, data?: any) => {
   return null;
 };
 
+const getStoredAuthToken = () => {
+  if (typeof window === 'undefined') return null;
+  const directToken = localStorage.getItem('auth_token') || localStorage.getItem('token');
+  if (directToken) return directToken;
+  const raw = localStorage.getItem('loginSuccessRoyalGame');
+  if (raw) {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return raw;
+    }
+  }
+  return null;
+};
+
 export async function postReq(url: string, data?: any): Promise<any> {
   const mockResponse = handleAuthMock(url, data);
   if (mockResponse) return mockResponse;
 
   try {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const token = getStoredAuthToken();
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'POST',
       headers: {
@@ -137,12 +152,15 @@ export function showErrorMessage(error: any) {
 export function removeAuthCookie() {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('token');
+    localStorage.removeItem('loginSuccessRoyalGame');
   }
 }
 
 export function setAuthCookie(token: string) {
   if (typeof window !== 'undefined') {
     localStorage.setItem('auth_token', token);
+    localStorage.setItem('token', token);
   }
 }
 
@@ -161,7 +179,7 @@ export async function getReq(url: string): Promise<any> {
   }
 
   try {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const token = getStoredAuthToken();
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'GET',
       headers: {

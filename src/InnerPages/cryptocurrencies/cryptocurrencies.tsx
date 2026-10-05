@@ -84,7 +84,7 @@ export default function SupportedNetworksPage() {
 
   async function api() {
     try {
-      const response = await fetch("https://sandbox-api.chainpay.biz/payments/options", {
+      const response = await fetch("https://staging-api.chainpay.biz/payments/options", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

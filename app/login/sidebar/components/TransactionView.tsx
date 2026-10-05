@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { getReq } from "@utils/apiHandlers";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
+import moment from "moment";
+import TransactionHashModal from "@components/Modals/TransactionHashModal";
 
 export default function TransactionView() {
     const [status, setStatus] = useState("all");
@@ -10,6 +13,10 @@ export default function TransactionView() {
     const [toDate, setToDate] = useState("");
     const [search, setSearch] = useState("");
     const [transactions, setTransactions] = useState<any[]>([]);
+
+    // Transaction Hash Modal state
+    const [showHashModal, setShowHashModal] = useState(false);
+    const [selectedHashes, setSelectedHashes] = useState<string[]>([]);
 
     const getAuthToken = () => {
         let token = localStorage.getItem("token");
@@ -40,7 +47,7 @@ export default function TransactionView() {
         if (!fromDate || !toDate) return;
 
         const token = getAuthToken();
-        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sandbox-api.chainpay.biz";
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
         let url = `${BASE_URL}/payments?skip=0&take=8&fromDate=${fromDate}&toDate=${toDate}`;
 
         if (status !== "all") {
@@ -77,39 +84,57 @@ export default function TransactionView() {
                 const mapped = rawList
                     .map((tx: any) => {
                         if (!tx) return null;
-                        const id = tx.id || tx.paymentToken || tx.token || tx._id || "";
+                        const id = tx.id || tx.paymentToken || tx._id || "";
 
-                        let amount = tx.amount || tx.fiatValue || tx.value || "";
-                        if (tx.fiatCurrency?.symbol && !amount.toString().includes(tx.fiatCurrency.symbol)) {
-                            amount = `${amount} ${tx.fiatCurrency.symbol}`;
+                        // Fiat Value formatting
+                        const fiatSign = tx.fiatCurrency?.sign || "$";
+                        const fiatSymbol = tx.fiatCurrency?.symbol || "";
+                        const rawFiat = tx.fiatValue !== undefined ? tx.fiatValue : (tx.amount || tx.value || "0");
+                        const fiatValue = `${fiatSign} ${rawFiat} ${fiatSymbol}`.trim();
+
+                        // Description
+                        const description = tx.description || "-";
+
+                        // Token (Crypto coin name/symbol from paymentRecords or fallback)
+                        const option = tx.paymentRecords?.[0]?.option;
+                        const token = option?.displayName || option?.name || option?.symbol || (tx.token ? (tx.token.length > 12 ? tx.token.slice(0, 8) + "..." : tx.token) : "-");
+                        const tokenLogo = option?.logo || null;
+
+                        // Expire At & Settled At dates
+                        const expireAt = tx.expireAt ? moment(tx.expireAt).format("DD MMM YYYY, HH:mm") : "-";
+                        const settledAt = tx.settledAt ? moment(tx.settledAt).format("DD MMM YYYY, HH:mm") : "-";
+
+                        // Status formatting
+                        let currentStatus = tx.status || "";
+                        if (!currentStatus) {
+                            if (tx.isPaid) currentStatus = "Paid";
+                            else if (tx.isPartial) currentStatus = "Partial";
+                            else if (tx.isExpired) currentStatus = "Expired";
+                            else currentStatus = "Pending";
+                        }
+                        if (currentStatus) {
+                            currentStatus = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1).toLowerCase();
                         }
 
-                        const tokenSymbol = tx.token || tx.symbol || tx.coin || (tx.options && tx.options[0]?.name) || "";
-
-                        let status = tx.status || "";
-                        if (!status) {
-                            if (tx.isPaid) status = "Paid";
-                            else if (tx.isPartial) status = "Partial";
-                            else if (tx.isExpired) status = "Expired";
-                            else status = "Pending";
-                        }
-                        if (status) {
-                            status = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
-                        }
-
-                        let date = tx.createdAt || tx.created_at || tx.date || "";
-                        if (date) {
-                            try {
-                                date = date.includes("T") ? date.split("T")[0] : date;
-                            } catch { }
+                        // Hashes for Action modal
+                        const hashes: string[] = [];
+                        if (Array.isArray(tx.paymentRecords)) {
+                            tx.paymentRecords.forEach((rec: any) => {
+                                if (rec.txHashIn) hashes.push(rec.txHashIn);
+                                if (rec.txHashOut) hashes.push(rec.txHashOut);
+                            });
                         }
 
                         return {
                             id,
-                            amount,
-                            token: tokenSymbol,
-                            status,
-                            createdAt: date
+                            fiatValue,
+                            description,
+                            token,
+                            tokenLogo,
+                            expireAt,
+                            settledAt,
+                            status: currentStatus,
+                            hashes,
                         };
                     })
                     .filter(Boolean);
@@ -123,6 +148,20 @@ export default function TransactionView() {
             });
     }, [fromDate, toDate, status]);
 
+    // Fetch merchant details when page loads
+    useEffect(() => {
+        const fetchMerchant = async () => {
+            try {
+                const response = await getReq("/merchants/me");
+                console.log("Merchant API Response:", response);
+            } catch (error) {
+                console.error("Merchant API Error:", error);
+            }
+        };
+
+        fetchMerchant();
+    }, []);
+
     const filteredTransactions = transactions.filter((tx) => {
         if (!tx) return false;
         const statusMatch =
@@ -130,7 +169,8 @@ export default function TransactionView() {
             tx?.status?.toLowerCase() === status.toLowerCase();
         const searchMatch =
             String(tx?.id || "").toLowerCase().includes(search.toLowerCase()) ||
-            String(tx?.token || "").toLowerCase().includes(search.toLowerCase());
+            String(tx?.token || "").toLowerCase().includes(search.toLowerCase()) ||
+            String(tx?.description || "").toLowerCase().includes(search.toLowerCase());
         return statusMatch && searchMatch;
     });
 
@@ -155,7 +195,7 @@ export default function TransactionView() {
                         onChange={(e) => setStatus(e.target.value)}
                         className="h-12 rounded-xl border border-slate-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200"
                     >
-                        <option value="all">All Statuses</option>
+                        <option value="all">All Status</option>
                         <option value="paid">Paid</option>
                         <option value="partial">Partial</option>
                         <option value="expired">Expired</option>
@@ -184,7 +224,7 @@ export default function TransactionView() {
                         <input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search by ID/Token..."
+                            placeholder="Search by ID/Token/Description..."
                             className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all duration-200"
                         />
                     </div>
@@ -197,23 +237,48 @@ export default function TransactionView() {
                     <table className="w-full text-sm text-left">
                         <thead className="bg-blue-600 text-white font-bold text-xs uppercase tracking-wider">
                             <tr>
-                                <th className="p-4">Transaction ID</th>
+                                <th className="p-4">Payment Id</th>
                                 <th className="p-4">Fiat Value</th>
                                 <th className="p-4">Description</th>
                                 <th className="p-4">Token</th>
-                                <th className="p-4">Created At</th>
+                                <th className="p-4">Expire At</th>
+                                <th className="p-4">Settled At</th>
                                 <th className="p-4">Status</th>
+                                <th className="p-4">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {filteredTransactions.length > 0 ? (
                                 filteredTransactions.map((tx) => (
                                     <tr key={tx.id} className="hover:bg-blue-50/50 transition">
-                                        <td className="p-4 font-mono font-medium text-slate-700">{tx.id}</td>
-                                        <td className="p-4 font-bold text-slate-900">{tx.amount}</td>
-                                        <td className="p-4 font-semibold text-slate-600">Crypto Payment Received</td>
-                                        <td className="p-4 font-bold text-slate-700">{tx.token}</td>
-                                        <td className="p-4 text-slate-500">{tx.createdAt}</td>
+                                        {/* 1. Payment Id */}
+                                        <td className="p-4 font-mono font-bold text-slate-700">{tx.id}</td>
+
+                                        {/* 2. Fiat Value */}
+                                        <td className="p-4 font-bold text-slate-900 whitespace-nowrap">{tx.fiatValue}</td>
+
+                                        {/* 3. Description */}
+                                        <td className="p-4 font-medium text-slate-600 max-w-[220px] truncate" title={tx.description}>
+                                            {tx.description}
+                                        </td>
+
+                                        {/* 4. Token */}
+                                        <td className="p-4 font-bold text-slate-700">
+                                            <div className="flex items-center gap-2">
+                                                {tx.tokenLogo && (
+                                                    <img src={tx.tokenLogo} alt={tx.token} className="h-5 w-5 rounded-full object-contain" />
+                                                )}
+                                                <span>{tx.token}</span>
+                                            </div>
+                                        </td>
+
+                                        {/* 5. Expire At */}
+                                        <td className="p-4 text-slate-500 whitespace-nowrap text-xs">{tx.expireAt}</td>
+
+                                        {/* 6. Settled At */}
+                                        <td className="p-4 text-slate-500 whitespace-nowrap text-xs">{tx.settledAt}</td>
+
+                                        {/* 7. Status */}
                                         <td className="p-4">
                                             <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${tx.status === "Paid"
                                                 ? "bg-green-100 text-green-600"
@@ -226,11 +291,28 @@ export default function TransactionView() {
                                                 {tx.status}
                                             </span>
                                         </td>
+
+                                        {/* 8. Action */}
+                                        <td className="p-4">
+                                            {tx.hashes && tx.hashes.length > 0 ? (
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedHashes(tx.hashes);
+                                                        setShowHashModal(true);
+                                                    }}
+                                                    className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-semibold transition border border-blue-200 cursor-pointer"
+                                                >
+                                                    View Hash
+                                                </button>
+                                            ) : (
+                                                <span className="text-slate-400 text-xs">-</span>
+                                            )}
+                                        </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-slate-400">
+                                    <td colSpan={8} className="p-8 text-center text-slate-400">
                                         No transactions found for this period.
                                     </td>
                                 </tr>
@@ -239,6 +321,14 @@ export default function TransactionView() {
                     </table>
                 </div>
             </div>
+
+            {/* Transaction Hash Modal */}
+            {showHashModal && (
+                <TransactionHashModal
+                    setOpen={setShowHashModal}
+                    txHashes={selectedHashes}
+                />
+            )}
         </motion.div>
     );
 }
