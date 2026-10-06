@@ -1,11 +1,10 @@
 import { toast } from 'sonner';
 
 const getBaseUrl = () => {
-  // Can be API_URL or NEXT_PUBLIC_API_URL
   const envUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL;
   if (envUrl) {
     try {
-      const url = new URL(envUrl);
+      const url = new URL(envUrl.trim());
       return url.origin;
     } catch (e) {
       return 'https://staging-api.chainpay.biz';
@@ -16,70 +15,23 @@ const getBaseUrl = () => {
 
 const BASE_URL = getBaseUrl();
 
-const isSandboxOffline = () => {
-  return process.env.NEXT_PUBLIC_MOCK_AUTH === 'true';
+const formatUrl = (url: string) => {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return `${BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
 };
 
-const handleAuthMock = (url: string, data?: any) => {
-  if (!isSandboxOffline()) return null;
-
-  if (url === '/auth/logout') {
-    return { status: true };
-  }
-  if (url === '/auth/login' || url === '/auth/register') {
-    const email = data?.email || 'merchant@gmail.com';
-    let mockToken = 'mock-session-token-' + Math.random().toString(36).substr(2);
-    try {
-      const payloadObj = { email };
-      const payloadBase64 = typeof window !== 'undefined'
-        ? window.btoa(JSON.stringify(payloadObj))
-        : Buffer.from(JSON.stringify(payloadObj)).toString('base64');
-      mockToken = `header.${payloadBase64}.signature`;
-    } catch (e) {
-      console.error(e);
-    }
-    return {
-      status: true,
-      accessToken: mockToken,
-      user: { email, name: data?.name || 'Merchant' }
-    };
-  }
-  if (url === '/auth/send-code') {
-    const email = data?.email || 'merchant@gmail.com';
-    let mockToken = 'mock-session-token';
-    try {
-      const payloadObj = { email };
-      const payloadBase64 = typeof window !== 'undefined'
-        ? window.btoa(JSON.stringify(payloadObj))
-        : Buffer.from(JSON.stringify(payloadObj)).toString('base64');
-      mockToken = `header.${payloadBase64}.signature`;
-    } catch (e) { }
-    return {
-      status: true,
-      email,
-      accessToken: mockToken,
-      data: {
-        sentAt: new Date().toISOString(),
-        timeout: 120000
-      }
-    };
-  }
-  if (url === '/auth/forgot-password' || url === '/auth/reset-password') {
-    return {
-      status: true,
-      data: {
-        sentAt: new Date().toISOString(),
-        timeout: 120000
-      }
-    };
-  }
-  return null;
-};
-
-const getStoredAuthToken = () => {
+export const getStoredAuthToken = (): string | null => {
   if (typeof window === 'undefined') return null;
   const directToken = localStorage.getItem('auth_token') || localStorage.getItem('token');
-  if (directToken) return directToken;
+  if (directToken) {
+    try {
+      return JSON.parse(directToken);
+    } catch {
+      return directToken;
+    }
+  }
   const raw = localStorage.getItem('loginSuccessRoyalGame');
   if (raw) {
     try {
@@ -91,45 +43,21 @@ const getStoredAuthToken = () => {
   return null;
 };
 
-export async function postReq(url: string, data?: any): Promise<any> {
-  const mockResponse = handleAuthMock(url, data);
-  if (mockResponse) return mockResponse;
-
-  try {
-    const token = getStoredAuthToken();
-    const response = await fetch(`${BASE_URL}${url}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    return result;
-  } catch (error: any) {
-    showErrorMessage(error.message || 'Something went wrong');
-    return { status: false, error };
+export function setAuthCookie(token: string) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('auth_token', token);
+    localStorage.setItem('token', token);
+    localStorage.setItem('loginSuccessRoyalGame', JSON.stringify(token));
   }
 }
 
-export async function postReqWithoutToken(url: string, data?: any): Promise<any> {
-  const mockResponse = handleAuthMock(url, data);
-  if (mockResponse) return mockResponse;
-
-  try {
-    const response = await fetch(`${BASE_URL}${url}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    return result;
-  } catch (error: any) {
-    showErrorMessage(error.message || 'Something went wrong');
-    return { status: false, error };
+export function removeAuthCookie() {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('token');
+    localStorage.removeItem('loginSuccessRoyalGame');
+    localStorage.removeItem('registered_user');
+    localStorage.removeItem('email');
   }
 }
 
@@ -144,50 +72,28 @@ export function showErrorMessage(error: any) {
       message = error.message;
     } else if (typeof error.error === 'string' && error.error) {
       message = error.error;
+    } else if (error.error?.message) {
+      message = typeof error.error.message === 'string' ? error.error.message : JSON.stringify(error.error.message);
+    } else if (error.data?.message) {
+      message = error.data.message;
     }
   }
   toast.error(message);
 }
 
-export function removeAuthCookie() {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('token');
-    localStorage.removeItem('loginSuccessRoyalGame');
-  }
-}
-
-export function setAuthCookie(token: string) {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('auth_token', token);
-    localStorage.setItem('token', token);
-  }
-}
-
-export async function getReq(url: string): Promise<any> {
-  if (isSandboxOffline()) {
-    if (url.includes('/user') || url.includes('/profile') || url.includes('/me') || url.includes('/admin')) {
-      return {
-        status: true,
-        data: {
-          email: 'mindesmita30@gmail.com',
-          name: 'Merchant User',
-          role: 'merchant'
-        }
-      };
-    }
-  }
-
+export async function postReq(url: string, data?: any): Promise<any> {
   try {
     const token = getStoredAuthToken();
-    const response = await fetch(`${BASE_URL}${url}`, {
-      method: 'GET',
+    const endpoint = formatUrl(url);
+    const response = await fetch(endpoint, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       },
+      body: JSON.stringify(data),
     });
-    const result = await response.json();
+    const result = await response.json().catch(() => ({}));
     return result;
   } catch (error: any) {
     showErrorMessage(error.message || 'Something went wrong');
@@ -195,3 +101,39 @@ export async function getReq(url: string): Promise<any> {
   }
 }
 
+export async function postReqWithoutToken(url: string, data?: any): Promise<any> {
+  try {
+    const endpoint = formatUrl(url);
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json().catch(() => ({}));
+    return result;
+  } catch (error: any) {
+    showErrorMessage(error.message || 'Something went wrong');
+    return { status: false, error };
+  }
+}
+
+export async function getReq(url: string): Promise<any> {
+  try {
+    const token = getStoredAuthToken();
+    const endpoint = formatUrl(url);
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+    });
+    const result = await response.json().catch(() => ({}));
+    return result;
+  } catch (error: any) {
+    showErrorMessage(error.message || 'Something went wrong');
+    return { status: false, error };
+  }
+}

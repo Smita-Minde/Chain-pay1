@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
     LayoutDashboard,
     Receipt,
@@ -16,9 +15,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@hooks";
+import { getReq, postReq, showErrorMessage } from "@utils/apiHandlers";
 import DeleteAccount from "@components/Modals/DeleteAccount";
 
 export default function ChangeEmailPage() {
@@ -34,8 +33,8 @@ export default function ChangeEmailPage() {
         }
     }, [router]);
 
-    const [email, setEmail] = useState("smita@gmail.com");
-    const [newEmail, setNewEmail] = useState("smita@gmail.com");
+    const [email, setEmail] = useState("");
+    const [newEmail, setNewEmail] = useState("");
 
     const { logout, changePassword } = useAuth();
 
@@ -52,20 +51,43 @@ export default function ChangeEmailPage() {
     // Modals
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
-    // Retrieve logged-in email from local storage
+    // Retrieve logged-in email dynamically from API or local storage
     useEffect(() => {
-        const storedUser = localStorage.getItem("registered_user");
-        if (storedUser) {
+        const loadUserProfile = async () => {
             try {
-                const parsed = JSON.parse(storedUser);
-                if (parsed.email) {
-                    setEmail(parsed.email);
-                    setNewEmail(parsed.email);
+                const res = await getReq("/merchants/me");
+                const userEmail = res?.data?.email || res?.email;
+                if (userEmail) {
+                    setEmail(userEmail);
+                    setNewEmail(userEmail);
+                    return;
                 }
             } catch (e) {
-                console.error(e);
+                console.error("Failed to load user profile:", e);
             }
-        }
+
+            const storedUser = localStorage.getItem("registered_user");
+            if (storedUser) {
+                try {
+                    const parsed = JSON.parse(storedUser);
+                    if (parsed.email) {
+                        setEmail(parsed.email);
+                        setNewEmail(parsed.email);
+                        return;
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+            const directEmail = localStorage.getItem("email");
+            if (directEmail) {
+                setEmail(directEmail);
+                setNewEmail(directEmail);
+            }
+        };
+
+        loadUserProfile();
     }, []);
 
     const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings') => {
@@ -93,7 +115,7 @@ export default function ChangeEmailPage() {
 
     const handleUpdateEmail = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newEmail) {
+        if (!newEmail.trim()) {
             toast.error("Please enter an email address.");
             return;
         }
@@ -107,44 +129,33 @@ export default function ChangeEmailPage() {
         try {
             toastId = toast.loading("Updating email...");
 
-            const storedUser = localStorage.getItem("registered_user");
-            if (storedUser) {
-                try {
-                    const parsed = JSON.parse(storedUser);
-                    parsed.email = newEmail;
-                    localStorage.setItem("registered_user", JSON.stringify(parsed));
-                    localStorage.setItem("email", newEmail);
-                } catch (err) {
-                    console.error(err);
-                }
-            } else {
+            const response = await postReq("/admin/change-email", { email: newEmail });
+            if (toastId) toast.dismiss(toastId);
+
+            const isSuccess = response && 
+                response.status !== false && 
+                response.statusCode !== 400 && 
+                response.statusCode !== 401 && 
+                response.statusCode !== 422 && 
+                response.statusCode !== 500 && 
+                (response.status === true || response.status === 200 || !response.error);
+
+            if (isSuccess) {
+                toast.success("Email updated successfully!");
+                setEmail(newEmail);
                 localStorage.setItem("registered_user", JSON.stringify({ email: newEmail }));
                 localStorage.setItem("email", newEmail);
+
+                if (typeof window !== "undefined") {
+                    window.dispatchEvent(new Event("storage"));
+                }
+            } else {
+                showErrorMessage(response?.error?.message || response?.message || response?.error || "Failed to update email.");
             }
-
-            const token = localStorage.getItem("token");
-            const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://staging-api.chainpay.biz";
-
-            await fetch(`${BASE_URL}/admin/change-email`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({ email: newEmail })
-            }).catch(() => null);
-
+        } catch (error: any) {
             if (toastId) toast.dismiss(toastId);
-            toast.success("Email updated successfully!");
-            setEmail(newEmail);
-
-            if (typeof window !== "undefined") {
-                window.dispatchEvent(new Event("storage"));
-            }
-        } catch (error) {
-            if (toastId) toast.dismiss(toastId);
-            console.error(error);
-            toast.error("Failed to update email.");
+            console.error("Error updating email:", error);
+            showErrorMessage(error?.message || "Failed to update email.");
         }
     };
 
@@ -166,20 +177,20 @@ export default function ChangeEmailPage() {
         let toastId: any = null;
         try {
             toastId = toast.loading("Updating password...");
-            const response = await changePassword({ oldPassword, newPassword });
+            const result = await changePassword({ oldPassword, newPassword, confirmPassword });
             if (toastId) toast.dismiss(toastId);
 
-            toast.success("Your password has been updated successfully");
-            setOldPassword("");
-            setNewPassword("");
-            setConfirmPassword("");
-        } catch (error) {
+            if (result?.success) {
+                setOldPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+            } else if (result?.error) {
+                // Error message is already displayed by changePassword
+            }
+        } catch (error: any) {
             if (toastId) toast.dismiss(toastId);
-            console.error(error);
-            toast.success("Your password has been updated successfully");
-            setOldPassword("");
-            setNewPassword("");
-            setConfirmPassword("");
+            console.error("Error updating password:", error);
+            showErrorMessage(error?.message || "Failed to update password.");
         }
     };
 
@@ -287,6 +298,7 @@ export default function ChangeEmailPage() {
                                         type="email"
                                         value={newEmail}
                                         onChange={(e) => setNewEmail(e.target.value)}
+                                        placeholder="Enter your email"
                                         className="h-11 w-full bg-white/80 border border-slate-200 rounded-xl pl-10 pr-4 text-sm text-slate-800 outline-none focus:border-blue-500 transition"
                                     />
                                 </div>

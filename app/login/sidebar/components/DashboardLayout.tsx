@@ -17,7 +17,7 @@ import Link from "next/link";
 import { Arrow } from "@radix-ui/react-context-menu";
 
 interface DashboardLayoutProps {
-    activeView: 'home' | 'transaction' | 'payout' | 'settings' | 'Paymentinspector';
+    activeView: 'home' | 'transaction' | 'payout' | 'settings' | 'Paymentinspector' | 'GeneratedAddress';
     children: React.ReactNode;
 }
 
@@ -35,7 +35,7 @@ export default function DashboardLayout({ activeView, children }: DashboardLayou
         }
     }, [router]);
 
-    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings' | 'paymentinspector') => {
+    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings' | 'paymentinspector' | 'GeneratedAddress') => {
         if (view === 'home') {
             router.push('/login/home');
         } else if (view === 'transaction') {
@@ -46,6 +46,8 @@ export default function DashboardLayout({ activeView, children }: DashboardLayou
             router.push('/login/AccountSetting');
         } else if (view === 'paymentinspector') {
             router.push('/login/Paymentinspector');
+        } else if (view === 'GeneratedAddress') {
+            router.push('/login/GeneratedAddress');
         }
     };
 
@@ -135,13 +137,24 @@ export default function DashboardLayout({ activeView, children }: DashboardLayou
 
                         <button
                             onClick={() => handleNav('paymentinspector')}
-                            className={`flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer border-none whitespace-nowrap shrink-0 ${activeView === 'settings'
+                            className={`flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer border-none whitespace-nowrap shrink-0 ${activeView === 'Paymentinspector'
                                 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
                                 : 'text-slate-700 hover:bg-white/40 hover:text-blue-600 bg-transparent'
                                 }`}
                         >
                             <ArrowLeftRight size={16} className="md:w-[18px] md:h-[18px]" />
                             <span>Payment Inspector</span>
+                        </button>
+
+                        <button
+                            onClick={() => handleNav('GeneratedAddress')}
+                            className={`flex items-center gap-2 px-3.5 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer border-none whitespace-nowrap shrink-0 ${activeView === 'GeneratedAddress'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                                : 'text-slate-700 hover:bg-white/40 hover:text-blue-600 bg-transparent'
+                                }`}
+                        >
+                            <ArrowLeftRight size={16} className="md:w-[18px] md:h-[18px]" />
+                            <span>Generated Address</span>
                         </button>
 
                         {/* Mobile Logout Button (in horizontal bar) */}

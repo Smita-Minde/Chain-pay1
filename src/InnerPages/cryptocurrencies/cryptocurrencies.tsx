@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Coins,
   Network,
@@ -9,99 +9,115 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
+import { getReq } from "@utils/apiHandlers";
 
-const networks = {
+interface Asset {
+  asset: string;
+  ticker: string;
+  min: string;
+  fee: string;
+}
 
-  mst: {
-    name: "MST Blockchain",
-    color: "from-blue-500 to-indigo-600",
-    assets: [
-      {
-        asset: "USDC (MEP20)",
-        ticker: "mst/usdc",
-        min: "1 USDC",
-        fee: "N/A",
-      },
-      {
-        asset: "MSTC",
-        ticker: "mstc",
-        min: "10 MSTC",
-        fee: "N/A",
-      },
-    ],
-  },
+interface NetworkInfo {
+  name: string;
+  color: string;
+  assets: Asset[];
+}
 
-
-  bnb: {
-    name: "BNB Smart Chain",
-    color: "from-yellow-400 to-orange-500",
-    assets: [
-      {
-        asset: "USDT (BEP20)",
-        ticker: "bnb/usdt",
-        min: "1 USDT",
-        fee: "N/A",
-      },
-      {
-        asset: "BNB (BEP20)",
-        ticker: "bnb",
-        min: "0.001 BNB",
-        fee: "N/A",
-      },
-      {
-        asset: "USDC (BEP20)",
-        ticker: "bnb/usdc",
-        min: "1 USDC",
-        fee: "N/A",
-      },
-    ],
-  },
-
-  tron: {
-    name: "TRON",
-    color: "from-red-500 to-pink-500",
-    assets: [
-      {
-        asset: "TRX (TRC20)",
-        ticker: "tron",
-        min: "10 TRX",
-        fee: "N/A",
-      },
-      {
-        asset: "USDT (TRC20)",
-        ticker: "tron/usdt",
-        min: "10 USDT",
-        fee: "N/A",
-      },
-    ],
-  },
-
+const networkColors: Record<string, string> = {
+  mst: "from-blue-500 to-indigo-600",
+  bnb: "from-yellow-400 to-orange-500",
+  tron: "from-red-500 to-pink-500",
 };
 
-
-
 export default function SupportedNetworksPage() {
+  const [networks, setNetworks] = useState<Record<string, NetworkInfo>>({});
+  const [activeNetwork, setActiveNetwork] = useState<string>("tron");
 
-  async function api() {
-    try {
-      const response = await fetch("https://staging-api.chainpay.biz/payments/options", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error(error);
+  useEffect(() => {
+    async function fetchCryptoData() {
+      try {
+        const response = await getReq("/payments/options");
+        const optionsList = Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response)
+          ? response
+          : [];
+
+        if (optionsList.length > 0) {
+          const grouped: Record<string, NetworkInfo> = {};
+
+          optionsList.forEach((opt: any) => {
+            const rawNetworkName = opt.network?.name || "Other";
+            let key = "other";
+            let color = "from-blue-500 to-indigo-600";
+
+            if (rawNetworkName.toLowerCase().includes("mst")) {
+              key = "mst";
+              color = networkColors.mst;
+            } else if (rawNetworkName.toLowerCase().includes("bnb") || rawNetworkName.toLowerCase().includes("binance")) {
+              key = "bnb";
+              color = networkColors.bnb;
+            } else if (rawNetworkName.toLowerCase().includes("tron")) {
+              key = "tron";
+              color = networkColors.tron;
+            } else {
+              key = rawNetworkName.toLowerCase().replace(/\s+/g, "_");
+            }
+
+            if (!grouped[key]) {
+              grouped[key] = {
+                name: rawNetworkName,
+                color: color,
+                assets: [],
+              };
+            }
+
+            // Calculate min transaction dynamically
+            let minFormatted = "1";
+            if (opt.minTxnValue && opt.decimals !== undefined) {
+              try {
+                const val = Number(opt.minTxnValue) / (10 ** opt.decimals);
+                minFormatted = `${val} ${opt.name || opt.symbol || ""}`.trim();
+              } catch {
+                minFormatted = `1 ${opt.name || opt.symbol || ""}`.trim();
+              }
+            } else {
+              minFormatted = `1 ${opt.name || opt.symbol || ""}`.trim();
+            }
+
+            grouped[key].assets.push({
+              asset: opt.displayName || opt.name || opt.symbol,
+              ticker: opt.ticker || opt.symbol?.toLowerCase() || "",
+              min: minFormatted,
+              fee: opt.estNetworkFee ? `${opt.estNetworkFee}` : "N/A",
+            });
+          });
+
+          setNetworks(grouped);
+          if (grouped["tron"]) {
+            setActiveNetwork("tron");
+          } else {
+            const firstKey = Object.keys(grouped)[0];
+            if (firstKey) setActiveNetwork(firstKey);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load cryptocurrencies:", error);
+      }
     }
-  }
-  api();
 
-  const [activeNetwork, setActiveNetwork] =
-    useState<keyof typeof networks>("tron");
+    fetchCryptoData();
+  }, []);
 
-  const current = networks[activeNetwork];
+  const current = networks[activeNetwork] || Object.values(networks)[0] || {
+    name: "Loading...",
+    color: "from-blue-500 to-indigo-600",
+    assets: [],
+  };
+
+  const totalNetworks = Object.keys(networks).length || 3;
+  const totalAssets = Object.values(networks).reduce((sum, n) => sum + n.assets.length, 0) || 7;
 
   return (
     <div className="bg-[#F7F8FC] min-h-screen overflow-x-hidden relative">
@@ -113,11 +129,6 @@ export default function SupportedNetworksPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 lg:py-24 relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <div className="flex flex-col items-start text-left">
-            {/* <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 -mt-20 rounded-full text-sm border border-blue-100 animate-fade-in">
-              <Network size={16} />
-              Supported Networks
-            </div> */}
-
             <h1 className="mt-0 text-3xl min-[360px]:text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 tracking-tight">
               Accept Crypto
               <span className="block text-blue-600 mt-1 lg:mt-2">
@@ -126,21 +137,20 @@ export default function SupportedNetworksPage() {
             </h1>
 
             <p className="mt-4 sm:mt-6 text-base min-[360px]:text-lg sm:text-xl text-slate-600 max-w-xl leading-relaxed">
-              Seamlessly accept payments across TRON, BNB Smart Chain and MST
-              Blockchain with secure and instant settlements.
+              Seamlessly accept payments across TRON, BNB Chain, and MST Blockchain with secure and instant non-custodial settlements.
             </p>
 
             <Link
-              href="/login"
-              className="mt-6 sm:mt-8 lg:mt-10 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 sm:px-8 py-3 sm:py-4 text-white font-medium transition duration-300 hover:bg-blue-700 shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30"
+              href="/signup"
+              className="mt-6 sm:mt-8 lg:mt-10 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 sm:px-8 py-3 sm:py-4 text-white font-medium transition duration-300 hover:bg-blue-700 shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 cursor-pointer"
             >
               Start Accepting Crypto
               <ArrowRight size={18} />
             </Link>
           </div>
 
-          <div className="flex justify-center items-center w-full -pt-32">
-            <div className="w-full flex justify-center items-center h-[270px] min-[360px]:h-[310px] min-[400px]:h-[365px] min-[500px]:h-[420px] sm:h-[480px] lg:h-[550px] overflow-visible my-4 lg:my-0 ">
+          <div className="flex justify-center items-center w-full">
+            <div className="w-full flex justify-center items-center h-[270px] min-[360px]:h-[310px] min-[400px]:h-[365px] min-[500px]:h-[420px] sm:h-[480px] lg:h-[550px] overflow-visible my-4 lg:my-0">
               <div className="relative scale-[0.48] min-[360px]:scale-[0.55] min-[400px]:scale-[0.65] min-[500px]:scale-[0.75] sm:scale-[0.85] lg:scale-100 origin-center transition-all duration-300 flex items-center justify-center w-[550px] h-[550px] shrink-0">
 
                 {/* Background Glow */}
@@ -195,32 +205,6 @@ export default function SupportedNetworksPage() {
                   }}
                   className="relative z-20"
                 >
-
-                  <motion.div
-                    className="absolute top-[120px] left-1/2 w-4 h-4 rounded-full bg-blue-500"
-                    animate={{
-                      y: [0, 120, 240, 320],
-                      opacity: [0, 1, 1, 0],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                  />
-
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.3, 0.6, 0.3],
-                    }}
-                    transition={{
-                      duration: 6,
-                      repeat: Infinity,
-                    }}
-                    className="absolute w-[500px] h-[500px] rounded-full bg-blue-400/20 blur-[120px]"
-                  />
-
                   <div className="w-40 h-40 rounded-[40px] bg-white border border-blue-100 shadow-[0_20px_60px_rgba(59,130,246,0.2)] flex flex-col items-center justify-center">
                     <Network className="w-16 h-16 text-blue-600" />
                     <span className="mt-2 font-bold text-blue-600">
@@ -363,7 +347,7 @@ export default function SupportedNetworksPage() {
               <button
                 key={key}
                 onClick={() =>
-                  setActiveNetwork(key as keyof typeof networks)
+                  setActiveNetwork(key)
                 }
                 className={`py-2.5 sm:py-3 px-1 sm:px-6 rounded-xl sm:rounded-2xl transition-all font-medium text-xs min-[360px]:text-sm sm:text-base cursor-pointer text-center flex items-center justify-center whitespace-normal sm:whitespace-nowrap w-full sm:w-auto leading-tight ${activeNetwork === key
                   ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
@@ -432,12 +416,12 @@ export default function SupportedNetworksPage() {
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl sm:rounded-[40px] p-6 sm:p-10 md:p-12 text-white shadow-xl shadow-indigo-600/10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 md:gap-10 text-center">
             <div className="flex flex-col justify-center">
-              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold">3</h3>
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold">{totalNetworks}</h3>
               <p className="text-sm sm:text-base mt-2 opacity-90">Networks</p>
             </div>
 
             <div className="flex flex-col justify-center">
-              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold">7</h3>
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold">{totalAssets}</h3>
               <p className="text-sm sm:text-base mt-2 opacity-90">Supported Assets</p>
             </div>
 
@@ -504,7 +488,3 @@ export default function SupportedNetworksPage() {
     </div>
   );
 }
-
-
-
-

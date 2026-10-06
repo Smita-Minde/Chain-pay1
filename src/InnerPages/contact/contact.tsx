@@ -1,5 +1,5 @@
 "use client";
-import { StubPage } from "@/components/hero/Stubpage/StubPage";
+
 import {
   MessageSquare,
   Code2,
@@ -7,41 +7,88 @@ import {
   Send,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import Link from "next/link";
+import { postReqWithoutToken, showErrorMessage } from "@utils/apiHandlers";
 
 export default function ContactPage() {
-
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
     description: "",
   });
+  const [emailError, setEmailError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateGmail = (email: string): string => {
+    const trimmed = email.trim();
+    if (!trimmed) {
+      return "Please enter your email address.";
+    }
+    // Must strictly be a valid @gmail.com address, rejecting typos like @gm.com, @gmain.com, etc.
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
+    if (!gmailRegex.test(trimmed)) {
+      return "Please enter a valid Gmail address ending in @gmail.com (e.g. user@gmail.com).";
+    }
+    return "";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!formData.fullname.trim()) {
+      toast.error("Please enter your full name.");
+      return;
+    }
+    const emailErr = validateGmail(formData.email);
+    if (emailErr) {
+      setEmailError(emailErr);
+      toast.error(emailErr);
+      return;
+    }
+    setEmailError("");
+    if (!formData.description.trim()) {
+      toast.error("Please enter your message.");
+      return;
+    }
+
+    let toastId: any = null;
     try {
-      const response = await fetch(
-        "https://staging-api.chainpay.biz/contact-us",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      setIsSubmitting(true);
+      toastId = toast.loading("Sending message...");
+      const response = await postReqWithoutToken("/contact-us", {
+        fullname: formData.fullname.trim(),
+        email: formData.email.trim(),
+        description: formData.description.trim(),
+      });
+      if (toastId) toast.dismiss(toastId);
 
-      const data = await response.json();
+      const isSuccess = response && 
+        response.status !== false && 
+        response.statusCode !== 400 && 
+        response.statusCode !== 500 && 
+        (response.status === "success" || response.status === true || response.status === 200 || !response.error);
 
-      console.log("API Response:", data);
-
-      if (response.ok) {
-        alert("Message sent successfully");
+      if (isSuccess) {
+        toast.success("Message sent successfully! Our team will contact you soon.");
+        setFormData({
+          fullname: "",
+          email: "",
+          description: "",
+        });
+        setEmailError("");
+      } else {
+        showErrorMessage(response?.message || response?.error?.message || response?.error || "Failed to send message.");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (toastId) toast.dismiss(toastId);
+      console.error("Error submitting contact form:", error);
+      showErrorMessage(error?.message || "Failed to send message.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
   return (
     <main className="relative overflow-hidden bg-[#f8faff]">
       {/* Background Glow */}
@@ -53,10 +100,6 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center lg:min-h-[640px]">
           {/* Left Column */}
           <div className="relative top-0 lg:-top-16 w-full min-w-0">
-            {/* <span className="inline-flex items-center rounded-full border border-blue-200 bg-white px-5 py-2 text-blue-600 font-medium">
-              Contact ChainPay
-            </span> */}
-
             <h1 className="text-3xl min-[360px]:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] text-slate-900 tracking-tight">
               Let&apos;s Build The Future
               <br className="hidden sm:inline" />
@@ -71,18 +114,18 @@ export default function ContactPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <button className="w-full sm:w-auto rounded-xl bg-blue-600 px-8 py-4 text-white shadow-lg transition hover:scale-105 cursor-pointer">
+              <button
+                type="button"
+                onClick={() => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })}
+                className="w-full sm:w-auto rounded-xl bg-blue-600 px-8 py-4 text-white shadow-lg transition hover:scale-105 cursor-pointer border-none font-semibold"
+              >
                 Contact Support
               </button>
-
-              {/* <button className="rounded-xl border border-slate-300 px-8 py-4 text-slate-700 hover:bg-white">
-                Developer Docs
-              </button> */}
             </div>
           </div>
 
           {/* Right Contact Card */}
-          <div className="relative w-full min-w-0">
+          <div id="contact-form" className="relative w-full min-w-0">
             <div className="absolute inset-0 rounded-[40px] bg-gradient-to-r from-blue-200/30 to-purple-200/30 blur-3xl" />
 
             <div className="group relative top-0 lg:-top-16 rounded-3xl sm:rounded-[36px] border border-slate-100 bg-white p-5 sm:p-7 xl:p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_80px_rgba(59,130,246,0.15)]">
@@ -103,6 +146,7 @@ export default function ContactPage() {
                     onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
                     type="text"
                     placeholder="Enter name"
+                    required
                     className="w-full rounded-2xl border border-slate-200 px-5 py-3 sm:py-3.5 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                   />
                 </div>
@@ -113,11 +157,26 @@ export default function ContactPage() {
                   </label>
                   <input
                     type="email"
-                    placeholder="Enter email"
+                    placeholder="Enter email (e.g. user@gmail.com)"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded-2xl border border-slate-200 px-5 py-3 sm:py-3.5 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      if (emailError) setEmailError("");
+                    }}
+                    pattern="[a-zA-Z0-9._%+-]+@gmail\.com"
+                    title="Please enter a valid Gmail address (e.g. user@gmail.com)"
+                    required
+                    className={`w-full rounded-2xl border ${
+                      emailError
+                        ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                        : "border-slate-200 focus:border-blue-500 focus:ring-blue-100"
+                    } px-5 py-3 sm:py-3.5 outline-none transition focus:ring-4`}
                   />
+                  {emailError && (
+                    <p className="mt-1.5 text-xs text-red-500 font-medium">
+                      {emailError}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -129,65 +188,24 @@ export default function ContactPage() {
                     placeholder="Write your message..."
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    required
                     className="w-full rounded-2xl border border-slate-200 px-5 py-3 sm:py-3.5 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3 sm:py-3.5 font-medium text-white shadow-lg transition hover:bg-blue-700 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3 sm:py-3.5 font-medium text-white shadow-lg transition hover:bg-blue-700 cursor-pointer border-none disabled:opacity-50"
                 >
                   <Send size={18} />
-                  Leave us a Message
+                  {isSubmitting ? "Sending..." : "Leave us a Message"}
                 </button>
               </form>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Support Cards */}
-      {/* <section className="relative z-10 max-w-7xl mx-auto px-6 py-10">
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="rounded-[30px] bg-white p-8 shadow-sm">
-              <MessageSquare className="h-10 w-10 text-blue-600" />
-
-              <h3 className="mt-5 text-2xl font-semibold">
-                General Support
-              </h3>
-
-              <p className="mt-3 text-slate-600">
-                Questions about ChainPay and payment
-                processing.
-              </p>
-            </div>
-
-            <div className="rounded-[30px] bg-white p-8 shadow-sm">
-              <Code2 className="h-10 w-10 text-purple-600" />
-
-              <h3 className="mt-5 text-2xl font-semibold">
-                Developer Support
-              </h3>
-
-              <p className="mt-3 text-slate-600">
-                API integration and technical assistance.
-              </p>
-            </div>
-
-            <div className="rounded-[30px] bg-white p-8 shadow-sm">
-              <Handshake className="h-10 w-10 text-green-600" />
-
-              <h3 className="mt-5 text-2xl font-semibold">
-                Partnerships
-              </h3>
-
-              <p className="mt-3 text-slate-600">
-                Business and enterprise collaboration
-                inquiries.
-              </p>
-            </div>
-          </div>
-        </section> */}
 
       {/* Why Contact Us */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-24">
@@ -251,24 +269,20 @@ export default function ContactPage() {
           </p>
 
           <div className="mt-8 flex justify-center gap-4">
-            <button className="rounded-xl bg-white px-8 py-4 text-blue-600 font-medium">
-              Get Started
-            </button>
+            <Link href="/signup">
+              <button className="rounded-xl bg-white px-8 py-4 text-blue-600 font-medium cursor-pointer border-none">
+                Get Started
+              </button>
+            </Link>
 
-            <button className="rounded-xl border border-white/30 px-8 py-4">
-              View Documentation
-            </button>
+            <Link href="/integration-docs">
+              <button className="rounded-xl border border-white/30 px-8 py-4 text-white bg-transparent cursor-pointer hover:bg-white/10 transition">
+                View Documentation
+              </button>
+            </Link>
           </div>
         </div>
       </section>
     </main>
   );
 }
-
-
-
-
-
-
-
-

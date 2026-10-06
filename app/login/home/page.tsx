@@ -7,7 +7,7 @@ import HomeView from "../sidebar/components/HomeView";
 export default function HomePage() {
     const router = useRouter();
 
-    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings' | 'Paymentinspector') => {
+    const handleNav = (view: 'home' | 'transaction' | 'payout' | 'settings' | 'Paymentinspector' | 'generatedaddress') => {
         if (view === 'home') {
             router.push('/login/home');
         } else if (view === 'transaction') {
@@ -19,6 +19,9 @@ export default function HomePage() {
         }
         else if (view === 'Paymentinspector') {
             router.push('/login/Paymentinspector');
+        }
+        else if (view === 'generatedaddress') {
+            router.push(`/login/GeneratedAddress`);
         }
     };
 

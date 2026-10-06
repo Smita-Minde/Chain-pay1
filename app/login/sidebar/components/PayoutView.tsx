@@ -230,10 +230,10 @@ export default function PayoutView() {
                             <ChevronLeft size={20} />
                         </button>
 
-                        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200/80 bg-white/80 text-slate-700 text-xs font-semibold backdrop-blur-md shadow-sm">
+                        {/* <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200/80 bg-white/80 text-slate-700 text-xs font-semibold backdrop-blur-md shadow-sm">
                             <User size={13} className="text-slate-500" />
                             <span className="font-mono">{formattedEmail}</span>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Title: Coin Name / Symbol (e.g., MSTC, TRC20_TRX) */}

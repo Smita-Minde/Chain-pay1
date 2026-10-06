@@ -75,7 +75,7 @@ export interface UseAuthReturn {
 const getErrorMessage = (response: any): string => {
   if (!response) return 'Operation failed';
   if (response.error?.message) {
-    return response.error.message;
+    return typeof response.error.message === 'string' ? response.error.message : JSON.stringify(response.error.message);
   }
   if (Array.isArray(response.message)) {
     return response.message.join(', ');
@@ -85,6 +85,9 @@ const getErrorMessage = (response: any): string => {
   }
   if (typeof response.error === 'string' && response.error) {
     return response.error;
+  }
+  if (typeof response.data?.message === 'string' && response.data.message) {
+    return response.data.message;
   }
   return 'Operation failed';
 };
@@ -111,10 +114,6 @@ export const useAuth = (): UseAuthReturn => {
 
   const navigateAuthenticatedUser = useCallback((): void => {
     if (Object.prototype.hasOwnProperty.call(localStorage, 'lastUrl')) {
-      // Turned off to enable new auth redirection
-      // const lastUrl = localStorage.getItem('lastUrl');
-      // localStorage.removeItem('lastUrl');
-      // navigate(lastUrl);
       navigate('/home');
     } else {
       navigate('/home');
@@ -129,8 +128,17 @@ export const useAuth = (): UseAuthReturn => {
       if (valid) {
         const response = await postReqWithoutToken('/auth/login', data);
         const token = response?.data?.accessToken || response?.accessToken || response?.tokens?.access?.token || response?.token;
-        const isSuccess = response && response.status !== false && response.status !== 400 && response.status !== 500 && (response.status === true || response.status === 200 || response.status === 201 || !!token || !!response.user);
-        
+        const isSuccess = response &&
+          response.status !== false &&
+          response.statusCode !== 400 &&
+          response.statusCode !== 401 &&
+          response.statusCode !== 422 &&
+          response.statusCode !== 500 &&
+          response.status !== 400 &&
+          response.status !== 401 &&
+          response.status !== 500 &&
+          (response.status === true || response.status === 200 || response.status === 201 || !!token || !!response.user || !!response.data);
+
         if (isSuccess) {
           if (token) {
             setAuthCookie(token);
@@ -162,14 +170,22 @@ export const useAuth = (): UseAuthReturn => {
   const register = useCallback(
     async (data: RegisterData, redirectPath?: string): Promise<any> => {
       const [valid, error] = await validateData(registerSchema, data);
-      console.log(valid, error);
       if (error) return [null, error];
       if (valid) {
         const { confirmPassword, ...registerPayload } = data;
         const response = await postReqWithoutToken('/auth/register', registerPayload);
         const token = response?.data?.accessToken || response?.accessToken || response?.tokens?.access?.token || response?.token;
-        const isSuccess = response && response.status !== false && response.status !== 400 && response.status !== 500 && (response.status === true || response.status === 200 || response.status === 201 || !!token || !!response.user);
-        
+        const isSuccess = response &&
+          response.status !== false &&
+          response.statusCode !== 400 &&
+          response.statusCode !== 401 &&
+          response.statusCode !== 422 &&
+          response.statusCode !== 500 &&
+          response.status !== 400 &&
+          response.status !== 401 &&
+          response.status !== 500 &&
+          (response.status === true || response.status === 200 || response.status === 201 || !!token || !!response.user || !!response.data || !!response.email);
+
         if (isSuccess) {
           if (token) {
             setAuthCookie(token);
@@ -186,7 +202,7 @@ export const useAuth = (): UseAuthReturn => {
             navigateAuthenticatedUser();
             window.location.reload();
           }
-          toast.success('Welcome! You have successfully logged in');
+          toast.success('Welcome! You have successfully registered');
           return [response.data || response, null];
         } else {
           const errMsg = getErrorMessage(response);
@@ -208,12 +224,13 @@ export const useAuth = (): UseAuthReturn => {
       const response = await postReqWithoutToken('/auth/forgot-password', {
         email: data.email,
       });
-      const isSuccess = response && 
-        response.status !== false && 
-        response.status !== 500 && 
-        response.status !== 400 && 
-        response.statusCode !== 400 && 
-        response.statusCode !== 500 && 
+      const isSuccess = response &&
+        response.status !== false &&
+        response.statusCode !== 400 &&
+        response.statusCode !== 422 &&
+        response.statusCode !== 500 &&
+        response.status !== 400 &&
+        response.status !== 500 &&
         (response.email || response.data || response.status === true || response.status === 200 || response.status === 201);
 
       if (isSuccess) {
@@ -237,12 +254,13 @@ export const useAuth = (): UseAuthReturn => {
         email: data.email,
         type: 'email',
       });
-      const isSuccess = response && 
-        response.status !== false && 
-        response.status !== 500 && 
-        response.status !== 400 && 
-        response.statusCode !== 400 && 
-        response.statusCode !== 500 && 
+      const isSuccess = response &&
+        response.status !== false &&
+        response.statusCode !== 400 &&
+        response.statusCode !== 422 &&
+        response.statusCode !== 500 &&
+        response.status !== 400 &&
+        response.status !== 500 &&
         (response.email || response.data || response.status === true || response.status === 200 || response.status === 201);
 
       if (isSuccess) {
@@ -257,15 +275,21 @@ export const useAuth = (): UseAuthReturn => {
   }, []);
 
   const authOtp = useCallback(async (data: AuthOtpData): Promise<any> => {
-    const response = await postReqWithoutToken('/auth/send-code', {
+    const payload: any = {
       email: data?.email,
-      password: data?.password,
       type: data?.type,
-    });
-    const isSuccess = response && 
-      response.status !== false && 
-      response.status !== 500 && 
-      response.status !== 400 && 
+    };
+    if (data?.password) {
+      payload.password = data.password;
+    }
+    const response = await postReqWithoutToken('/auth/send-code', payload);
+    const isSuccess = response &&
+      response.status !== false &&
+      response.statusCode !== 400 &&
+      response.statusCode !== 422 &&
+      response.statusCode !== 500 &&
+      response.status !== 400 &&
+      response.status !== 500 &&
       (response.email || response.data || response.status === true || response.status === 200 || response.status === 201);
 
     if (isSuccess) {
@@ -285,17 +309,24 @@ export const useAuth = (): UseAuthReturn => {
 
     if (error) return { error };
     if (valid) {
-      const response = await postReq('admin/change-password', {
+      const response = await postReq('/admin/change-password', {
         oldPassword: data.oldPassword,
         newPassword: data.newPassword,
       });
-      if (response.status) {
+      const isSuccess = response &&
+        response.status !== false &&
+        response.statusCode !== 400 &&
+        response.statusCode !== 401 &&
+        response.statusCode !== 500 &&
+        (response.status === true || response.status === 200 || response.status === 201 || !response.error);
+
+      if (isSuccess) {
         toast.success('Your Password has changed successfully');
         return { success: true };
       } else {
         const errMsg = getErrorMessage(response);
         showErrorMessage(errMsg);
-        toast.error(errMsg);
+        return { error: errMsg };
       }
     }
     return [null];
@@ -310,9 +341,16 @@ export const useAuth = (): UseAuthReturn => {
         confirmPassword: data.confirmPassword,
       });
 
-      if (response.status) {
+      const isSuccess = response &&
+        response.status !== false &&
+        response.statusCode !== 400 &&
+        response.statusCode !== 422 &&
+        response.statusCode !== 500 &&
+        (response.status === true || response.status === 200 || response.status === 201 || !response.error);
+
+      if (isSuccess) {
         toast.success('Your password has been reset successfully');
-        return [response.data, null];
+        return [response.data || response, null];
       } else {
         const errMsg = getErrorMessage(response);
         showErrorMessage(errMsg);

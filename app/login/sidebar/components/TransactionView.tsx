@@ -235,7 +235,7 @@ export default function TransactionView() {
             <div className="overflow-hidden rounded-3xl border border-white/40 bg-white/60 shadow-xl backdrop-blur-md">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-blue-600 text-white font-bold text-xs uppercase tracking-wider">
+                        <thead className="bg-blue-600 text-white font-bold text-xs uppercase tracking-widerbg-blue-600 text-white font-bold text-xs uppercase">
                             <tr>
                                 <th className="p-4">Payment Id</th>
                                 <th className="p-4">Fiat Value</th>
